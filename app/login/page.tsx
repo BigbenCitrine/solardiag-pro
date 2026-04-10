@@ -22,7 +22,7 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) { alert(error.message); }
       else { window.location.href = "/"; }
-    } catch (err) { alert("Eroare: " + String(err)); }
+    } catch (err) { alert(String(err)); }
     setLoading(false);
   };
 
@@ -31,27 +31,19 @@ export default function LoginPage() {
     try {
       const { error } = await supabase.auth.signUp({ email, password });
       if (error) { alert(error.message); }
-      else { alert("Cont creat cu succes."); }
-    } catch (err) { alert("Eroare: " + String(err)); }
+      else { alert("Cont creat!"); }
+    } catch (err) { alert(String(err)); }
     setLoading(false);
   };
 
   return (
     <div style={{ height:"100vh", display:"flex", alignItems:"center", justifyContent:"center", background:"#0f172a", color:"white" }}>
-      <div style={{ background:"#1e293b", padding:30, borderRadius:12, width:320, boxShadow:"0 10px 30px rgba(0,0,0,0.4)" }}>
+      <div style={{ background:"#1e293b", padding:30, borderRadius:12, width:320 }}>
         <h2 style={{ marginBottom:20, textAlign:"center" }}>SolarDiag Login</h2>
-        <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}
-          style={{ width:"100%", padding:10, marginBottom:10, borderRadius:6, border:"1px solid #334155", background:"#0f172a", color:"white", fontSize:16 }} />
-        <input type="password" placeholder="Parola" value={password} onChange={(e) => setPassword(e.target.value)}
-          style={{ width:"100%", padding:10, marginBottom:20, borderRadius:6, border:"1px solid #334155", background:"#0f172a", color:"white", fontSize:16 }} />
-        <button onClick={handleLogin} disabled={loading}
-          style={{ width:"100%", padding:12, background:"#3b82f6", border:"none", borderRadius:8, color:"white", marginBottom:10, cursor:"pointer", fontSize:16, fontWeight:700 }}>
-          {loading ? "Se procesează..." : "Login"}
-        </button>
-        <button onClick={handleSignup} disabled={loading}
-          style={{ width:"100%", padding:12, background:"#10b981", border:"none", borderRadius:8, color:"white", cursor:"pointer", fontSize:16, fontWeight:700 }}>
-          Creează cont
-        </button>
+        <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} style={{ width:"100%", padding:10, marginBottom:10, borderRadius:6, border:"1px solid #334155", background:"#0f172a", color:"white", fontSize:16 }} />
+        <input type="password" placeholder="Parola" value={password} onChange={(e) => setPassword(e.target.value)} style={{ width:"100%", padding:10, marginBottom:20, borderRadius:6, border:"1px solid #334155", background:"#0f172a", color:"white", fontSize:16 }} />
+        <button onClick={handleLogin} disabled={loading} style={{ width:"100%", padding:12, background:"#3b82f6", border:"none", borderRadius:8, color:"white", marginBottom:10, cursor:"pointer", fontSize:16, fontWeight:700 }}>{loading ? "..." : "Login"}</button>
+        <button onClick={handleSignup} disabled={loading} style={{ width:"100%", padding:12, background:"#10b981", border:"none", borderRadius:8, color:"white", cursor:"pointer", fontSize:16, fontWeight:700 }}>Creeaz� cont</button>
       </div>
     </div>
   );
