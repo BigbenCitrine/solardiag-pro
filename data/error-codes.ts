@@ -7,19 +7,9 @@ export const errorCodes = [
     code: "11",
     title: "Cod 11 - interpretare dependentă de model",
     confidence: "scăzut",
-    meaning:
-      "Codul 11 la Growatt nu este universal. Semnificația depinde de modelul exact și mesajul complet din display.",
-    checks: [
-      "verifică modelul exact al invertorului",
-      "verifică mesajul complet, nu doar codul",
-      "verifică LED-uri sau alte indicii",
-      "verifică tensiunea DC și conexiunile",
-    ],
-    action: [
-      "identifică modelul exact",
-      "fotografiază display-ul complet",
-      "compară cu manualul oficial",
-    ],
+    meaning: "Codul 11 la Growatt nu este universal. Semnificația depinde de modelul exact și mesajul complet din display.",
+    checks: ["verifică modelul exact al invertorului", "verifică mesajul complet, nu doar codul", "verifică LED-uri sau alte indicii", "verifică tensiunea DC și conexiunile"],
+    action: ["identifică modelul exact", "fotografiază display-ul complet", "compară cu manualul oficial"],
     service: ["cheamă service dacă nu poți identifica clar eroarea"],
     ask: ["ce model exact Growatt este?", "ce mesaj complet apare?"],
   },
@@ -31,20 +21,205 @@ export const errorCodes = [
     title: "Error 101 - Communication fault",
     confidence: "mediu",
     meaning: "Eroare de comunicare internă sau externă.",
-    checks: [
-      "verifică conexiunile de comunicație",
-      "verifică cabluri și conectori",
-      "verifică dacă eroarea apare constant sau intermitent",
-    ],
-    action: [
-      "repornește invertorul",
-      "verifică conexiunile de comunicație",
-    ],
+    checks: ["verifică conexiunile de comunicație", "verifică cabluri și conectori", "verifică dacă eroarea apare constant sau intermitent"],
+    action: ["repornește invertorul", "verifică conexiunile de comunicație"],
     service: ["cheamă service dacă eroarea persistă"],
-    ask: [
-      "apare constant sau intermitent?",
-      "există și probleme de monitorizare sau logger?",
-    ],
+    ask: ["apare constant sau intermitent?", "există și probleme de monitorizare sau logger?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "102",
+    title: "Error 102 - Auto Test failed",
+    confidence: "ridicat",
+    meaning: "Testul automat intern a eșuat. Invertorul nu a putut finaliza verificările interne la pornire.",
+    checks: ["verifică tensiunea AC la borne", "verifică frecvența rețelei", "verifică dacă mai apar și alte coduri simultan", "verifică dacă eroarea apare la fiecare pornire"],
+    action: ["repornește invertorul", "verifică parametrii rețelei AC", "dacă persistă, notează toate codurile afișate"],
+    service: ["cheamă service dacă eroarea apare la fiecare pornire"],
+    ask: ["eroarea apare la fiecare pornire?", "ce tensiune și frecvență AC ai măsurat?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "103",
+    title: "Error 103 - No AC connection",
+    confidence: "ridicat",
+    meaning: "Invertorul nu detectează conexiunea AC.",
+    checks: ["verifică dacă există tensiune AC la borne", "verifică întrerupătorul și siguranțele AC", "verifică cablurile și conexiunile AC"],
+    action: ["confirmă prezența rețelei AC", "verifică protecțiile și conexiunile AC", "repornește după verificare"],
+    service: ["cheamă service dacă rețeaua este prezentă dar eroarea persistă"],
+    ask: ["ai tensiune AC la borne?", "întrerupătorul AC este pornit?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "104",
+    title: "Error 104 - PV isolation low",
+    confidence: "ridicat",
+    meaning: "Rezistența de izolație pe partea PV este prea mică față de pământ.",
+    checks: ["inspectează cablurile PV pentru deteriorări sau umezeală", "verifică conectorii MC4", "măsoară rezistența de izolație a fiecărui string", "verifică cutiile de joncțiune"],
+    action: ["izolează stringul suspect", "remediază cablul sau conectorul defect", "repornește după eliminarea defectului"],
+    service: ["cheamă service dacă defectul persistă după verificări"],
+    ask: ["problema apare după ploaie?", "ai măsurat izolația stringurilor?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "105",
+    title: "Error 105 - Residual current too high",
+    confidence: "ridicat",
+    meaning: "Curentul rezidual detectat depășește limita admisă.",
+    checks: ["verifică izolația cablurilor PV", "verifică împământarea sistemului", "inspectează conectorii și traseele DC"],
+    action: ["izolează circuitul afectat", "remediază cauza curentului rezidual", "repornește după remediere"],
+    service: ["cheamă service dacă alarma persistă"],
+    ask: ["problema apare pe umezeală?", "mai apar și alte coduri?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "106",
+    title: "Error 106 - Output current too high",
+    confidence: "ridicat",
+    meaning: "Curentul de ieșire AC depășește limita admisă.",
+    checks: ["verifică dacă există scurt pe partea AC", "verifică conexiunile AC", "verifică dacă invertorul este suprasolicitat"],
+    action: ["oprește invertorul", "verifică partea AC înainte de repornire"],
+    service: ["cheamă service dacă eroarea persistă"],
+    ask: ["există scurt pe partea AC?", "ce sarcină AC există?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "107",
+    title: "Error 107 - Output voltage out of range",
+    confidence: "ridicat",
+    meaning: "Tensiunea de ieșire AC este în afara limitelor admise.",
+    checks: ["măsoară tensiunea AC la borne", "verifică rețeaua și conexiunile AC", "verifică dacă problema apare constant"],
+    action: ["verifică parametrii rețelei", "repornește după stabilizarea tensiunii"],
+    service: ["cheamă service dacă tensiunea este normală dar eroarea persistă"],
+    ask: ["ce tensiune AC ai măsurat?", "problema este continuă sau intermitentă?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "108",
+    title: "Error 108 - Grid frequency out of range",
+    confidence: "ridicat",
+    meaning: "Frecvența rețelei este în afara limitelor admise.",
+    checks: ["măsoară frecvența rețelei", "verifică dacă problema este temporară", "verifică dacă mai apar și alte alarme de rețea"],
+    action: ["așteaptă stabilizarea rețelei", "verifică parametrii AC înainte de repornire"],
+    service: ["contactează operatorul de rețea dacă problema persistă"],
+    ask: ["ce frecvență ai măsurat?", "mai apar și alte erori de rețea?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "109",
+    title: "Error 109 - Grid voltage out of range",
+    confidence: "ridicat",
+    meaning: "Tensiunea rețelei este în afara limitelor admise (prea mare sau prea mică).",
+    checks: ["măsoară tensiunea AC", "verifică dacă problema apare la anumite ore", "verifică conexiunile și traseul AC"],
+    action: ["verifică rețeaua și conexiunile AC", "dacă persistă, discută cu distribuitorul"],
+    service: ["cheamă service dacă tensiunea este normală dar eroarea rămâne"],
+    ask: ["ce tensiune AC ai măsurat?", "apare doar în anumite intervale?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "110",
+    title: "Error 110 - No utility",
+    confidence: "ridicat",
+    meaning: "Invertorul nu detectează rețeaua publică.",
+    checks: ["verifică dacă există tensiune AC la borne", "verifică siguranțele AC", "verifică bornele și conexiunile"],
+    action: ["confirmă prezența rețelei", "verifică protecțiile AC"],
+    service: ["cheamă service dacă persistă cu rețea normală"],
+    ask: ["ai tensiune AC la borne?", "au existat fluctuații sau cădere de rețea?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "111",
+    title: "Error 111 - Grid voltage unbalance",
+    confidence: "ridicat",
+    meaning: "Dezechilibru de tensiune între fazele rețelei (trifazat).",
+    checks: ["măsoară tensiunea pe fiecare fază", "verifică conexiunile trifazate", "verifică dacă problema este pe rețea sau pe cablaj"],
+    action: ["verifică conexiunile trifazate", "discută cu distribuitorul dacă dezechilibrul vine din rețea"],
+    service: ["cheamă service dacă conexiunile sunt corecte dar eroarea persistă"],
+    ask: ["ce tensiuni ai pe fiecare fază?", "problema apare constant?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "112",
+    title: "Error 112 - Grid frequency unsteady",
+    confidence: "ridicat",
+    meaning: "Frecvența rețelei este instabilă sau fluctuantă.",
+    checks: ["verifică stabilitatea rețelei", "verifică dacă mai apar și alte alarme AC", "verifică conexiunile AC"],
+    action: ["așteaptă stabilizarea rețelei", "repornește după stabilizare"],
+    service: ["contactează operatorul de rețea dacă problema persistă"],
+    ask: ["problema apare în anumite intervale?", "mai apar și alte coduri?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "113",
+    title: "Error 113 - Input voltage unbalance",
+    confidence: "ridicat",
+    meaning: "Dezechilibru de tensiune la intrarea DC (diferență mare între stringuri).",
+    checks: ["măsoară tensiunea fiecărui string DC", "verifică dacă toate stringurile sunt funcționale", "verifică conexiunile DC"],
+    action: ["identifică stringul cu tensiune diferită", "verifică conexiunile și starea panourilor"],
+    service: ["cheamă service dacă stringurile par normale dar eroarea persistă"],
+    ask: ["ce tensiuni ai pe fiecare string?", "există panouri umbrite sau defecte?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "114",
+    title: "Error 114 - Input overcurrent",
+    confidence: "ridicat",
+    meaning: "Curentul DC de intrare depășește limita admisă.",
+    checks: ["verifică numărul de panouri pe string", "verifică dacă dimensionarea stringului este corectă", "verifică dacă există scurt pe DC"],
+    action: ["oprește DC", "verifică dimensionarea stringurilor", "remediază înainte de repornire"],
+    service: ["cheamă service dacă curentul este normal dar eroarea persistă"],
+    ask: ["câte panouri sunt pe string?", "ce curent ai măsurat?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "115",
+    title: "Error 115 - Boost overcurrent",
+    confidence: "ridicat",
+    meaning: "Supracurent în circuitul boost intern.",
+    checks: ["verifică tensiunea și curentul DC", "verifică dacă există scurt pe partea DC", "repornește și urmărește dacă apare imediat"],
+    action: ["oprește invertorul", "verifică conexiunile DC înainte de repornire"],
+    service: ["cheamă service dacă eroarea persistă după restart"],
+    ask: ["eroarea apare imediat la pornire?", "ce tensiune DC ai?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "116",
+    title: "Error 116 - Output overcurrent",
+    confidence: "ridicat",
+    meaning: "Supracurent pe ieșirea AC.",
+    checks: ["verifică sarcina AC conectată", "verifică dacă există scurt pe AC", "verifică conexiunile AC"],
+    action: ["oprește invertorul", "verifică partea AC înainte de repornire"],
+    service: ["cheamă service dacă eroarea persistă"],
+    ask: ["există scurt pe AC?", "ce sarcină este conectată?"],
   },
 
   {
@@ -54,20 +229,62 @@ export const errorCodes = [
     title: "Error 117 - Relay fault",
     confidence: "mediu",
     meaning: "Defect de releu intern.",
-    checks: [
-      "verifică tensiunea AC",
-      "verifică conexiunile AC",
-      "verifică dacă eroarea apare la cuplare",
-    ],
-    action: [
-      "oprește invertorul",
-      "verifică partea AC înainte de repornire",
-    ],
+    checks: ["verifică tensiunea AC", "verifică conexiunile AC", "verifică dacă eroarea apare la cuplare"],
+    action: ["oprește invertorul", "verifică partea AC înainte de repornire"],
     service: ["cheamă service dacă eroarea persistă"],
-    ask: [
-      "apare imediat la conectarea în rețea?",
-      "ce tensiune AC ai măsurat?",
-    ],
+    ask: ["apare imediat la conectarea în rețea?", "ce tensiune AC ai măsurat?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "118",
+    title: "Error 118 - Internal temperature too high",
+    confidence: "ridicat",
+    meaning: "Temperatura internă a invertorului a depășit limita admisă.",
+    checks: ["verifică ventilarea spațiului de montaj", "verifică dacă ventilatoarele funcționează", "verifică depunerile de praf pe radiator", "verifică temperatura ambientală"],
+    action: ["îmbunătățește ventilarea", "curăță radiatorul și ventilatoarele", "lasă invertorul să se răcească"],
+    service: ["cheamă service dacă ventilatoarele nu funcționează sau eroarea persistă la temperaturi normale"],
+    ask: ["invertorul este montat în soare direct?", "ventilatoarele pornesc?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "119",
+    title: "Error 119 - Internal fan fault",
+    confidence: "ridicat",
+    meaning: "Defect al ventilatorului intern.",
+    checks: ["verifică dacă ventilatorul se rotește", "verifică dacă există praf sau obstrucție", "ascultă dacă apar zgomote anormale"],
+    action: ["curăță ventilatorul", "dacă nu pornește, oprește invertorul pentru a evita supraîncălzirea"],
+    service: ["cheamă service pentru înlocuirea ventilatorului"],
+    ask: ["ventilatorul se rotește?", "există zgomote anormale?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "120",
+    title: "Error 120 - Over temperature derating",
+    confidence: "ridicat",
+    meaning: "Invertorul reduce puterea din cauza temperaturii prea mari.",
+    checks: ["verifică temperatura ambientală", "verifică ventilarea", "verifică dacă ventilatoarele funcționează"],
+    action: ["îmbunătățește ventilarea", "curăță radiatorul"],
+    service: ["cheamă service dacă derating-ul persistă la temperaturi normale"],
+    ask: ["ce temperatură ambientală este?", "ventilatoarele funcționează?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "121",
+    title: "Error 121 - GFDI fault",
+    confidence: "ridicat",
+    meaning: "Defect de punere la pământ detectat pe circuitul PV.",
+    checks: ["verifică cablurile PV pentru deteriorări", "verifică conectorii MC4", "inspectează cutiile de joncțiune", "verifică dacă problema apare pe umezeală"],
+    action: ["izolează stringul suspect", "repornește numai după eliminarea defectului"],
+    service: ["cheamă service dacă defectul persistă"],
+    ask: ["problema apare pe ploaie sau umezeală?", "ai inspectat toți conectorii?"],
   },
 
   {
@@ -77,20 +294,75 @@ export const errorCodes = [
     title: "Error 122 - Utility loss",
     confidence: "ridicat",
     meaning: "Invertorul nu detectează rețeaua.",
-    checks: [
-      "verifică tensiunea AC",
-      "verifică siguranțele AC",
-      "verifică bornele și conexiunile",
-    ],
-    action: [
-      "confirmă prezența rețelei",
-      "verifică protecțiile AC",
-    ],
+    checks: ["verifică tensiunea AC", "verifică siguranțele AC", "verifică bornele și conexiunile"],
+    action: ["confirmă prezența rețelei", "verifică protecțiile AC"],
     service: ["cheamă service dacă persistă cu rețea normală"],
-    ask: [
-      "ai tensiune AC la borne?",
-      "au existat fluctuații sau cădere de rețea?",
-    ],
+    ask: ["ai tensiune AC la borne?", "au existat fluctuații sau cădere de rețea?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "123",
+    title: "Error 123 - Grid voltage too low",
+    confidence: "ridicat",
+    meaning: "Tensiunea rețelei este sub limita minimă admisă.",
+    checks: ["măsoară tensiunea AC", "verifică conexiunile și cablul AC", "verifică dacă există cădere de tensiune pe cablu"],
+    action: ["confirmă tensiunea rețelei", "verifică traseul și conexiunile AC"],
+    service: ["cheamă service dacă tensiunea este normală dar eroarea persistă"],
+    ask: ["ce tensiune AC ai măsurat?", "cablul AC este dimensionat corect?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "124",
+    title: "Error 124 - Grid voltage too high",
+    confidence: "ridicat",
+    meaning: "Tensiunea rețelei depășește limita maximă admisă.",
+    checks: ["măsoară tensiunea AC", "verifică dacă problema apare la ore cu producție mare", "verifică secțiunea cablului AC"],
+    action: ["verifică rețeaua și conexiunile AC", "discută cu distribuitorul dacă tensiunea este constant mare"],
+    service: ["cheamă service dacă tensiunea este normală dar eroarea persistă"],
+    ask: ["ce tensiune AC ai măsurat?", "apare doar la anumite ore?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "125",
+    title: "Error 125 - Grid frequency too low",
+    confidence: "ridicat",
+    meaning: "Frecvența rețelei este sub limita admisă.",
+    checks: ["măsoară frecvența rețelei", "verifică dacă problema este temporară", "verifică dacă mai apar și alte alarme AC"],
+    action: ["așteaptă stabilizarea rețelei", "repornește după stabilizare"],
+    service: ["contactează operatorul de rețea dacă problema persistă"],
+    ask: ["ce frecvență ai măsurat?", "problema apare constant?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "126",
+    title: "Error 126 - Grid frequency too high",
+    confidence: "ridicat",
+    meaning: "Frecvența rețelei depășește limita maximă admisă.",
+    checks: ["măsoară frecvența rețelei", "verifică dacă problema este temporară", "verifică dacă mai apar și alte alarme AC"],
+    action: ["așteaptă stabilizarea rețelei", "repornește după stabilizare"],
+    service: ["contactează operatorul de rețea dacă problema persistă"],
+    ask: ["ce frecvență ai măsurat?", "problema apare constant sau intermitent?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "201",
+    title: "Error 201 - DC over voltage",
+    confidence: "ridicat",
+    meaning: "Tensiunea DC de intrare depășește limita maximă admisă a invertorului.",
+    checks: ["măsoară tensiunea stringului DC", "verifică numărul de panouri în serie", "verifică dacă temperatura scăzută a crescut Voc-ul"],
+    action: ["oprește DC dacă tensiunea depășește limita", "corectează dimensionarea stringului dacă e cazul"],
+    service: ["cheamă service dacă valorile sunt normale dar eroarea persistă"],
+    ask: ["ce tensiune DC ai măsurat?", "câte panouri sunt în serie?"],
   },
 
   {
@@ -100,20 +372,192 @@ export const errorCodes = [
     title: "Error 202 - PV Voltage High",
     confidence: "ridicat",
     meaning: "Tensiunea DC depășește limita maximă admisă.",
-    checks: [
-      "măsoară tensiunea stringurilor",
-      "verifică numărul de panouri în serie",
-      "verifică temperaturile scăzute (Voc mare)",
-    ],
-    action: [
-      "oprește DC dacă e peste limită",
-      "corectează dimensionarea stringului",
-    ],
+    checks: ["măsoară tensiunea stringurilor", "verifică numărul de panouri în serie", "verifică temperaturile scăzute (Voc mare)"],
+    action: ["oprește DC dacă e peste limită", "corectează dimensionarea stringului"],
     service: ["cheamă service dacă valorile sunt normale dar eroarea persistă"],
-    ask: [
-      "ce tensiune ai măsurat?",
-      "câte panouri sunt în serie?",
-    ],
+    ask: ["ce tensiune ai măsurat?", "câte panouri sunt în serie?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "203",
+    title: "Error 203 - DC bus voltage too high",
+    confidence: "ridicat",
+    meaning: "Tensiunea bus-ului DC intern este prea mare.",
+    checks: ["verifică tensiunea DC de intrare", "repornește și urmărește dacă apare imediat", "verifică dacă mai apar și alte coduri"],
+    action: ["oprește invertorul", "verifică tensiunea DC înainte de repornire"],
+    service: ["cheamă service dacă eroarea persistă după restart"],
+    ask: ["ce tensiune DC ai măsurat?", "eroarea apare imediat la pornire?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "204",
+    title: "Error 204 - PV input current too high",
+    confidence: "ridicat",
+    meaning: "Curentul DC de intrare depășește limita admisă.",
+    checks: ["verifică numărul de panouri pe string", "verifică dimensionarea stringului", "verifică dacă există scurt pe DC"],
+    action: ["oprește DC", "verifică dimensionarea stringurilor"],
+    service: ["cheamă service dacă curentul este normal dar eroarea persistă"],
+    ask: ["câte panouri sunt pe string?", "ce curent ai măsurat?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "205",
+    title: "Error 205 - DC bus mid voltage too low",
+    confidence: "mediu",
+    meaning: "Tensiunea intermediară a bus-ului DC este prea mică.",
+    checks: ["repornește invertorul", "verifică tensiunea DC de intrare", "verifică dacă mai apar și alte coduri"],
+    action: ["repornește controlat", "dacă persistă, notează contextul"],
+    service: ["cheamă service dacă eroarea revine imediat"],
+    ask: ["eroarea apare imediat la pornire?", "ce tensiune DC ai?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "206",
+    title: "Error 206 - DC bus voltage too low",
+    confidence: "ridicat",
+    meaning: "Tensiunea bus-ului DC intern este prea mică.",
+    checks: ["verifică tensiunea DC de intrare", "verifică dacă există producție PV suficientă", "verifică conexiunile DC"],
+    action: ["verifică tensiunea și conexiunile DC", "repornește după verificare"],
+    service: ["cheamă service dacă tensiunea DC este normală dar eroarea persistă"],
+    ask: ["ce tensiune DC ai măsurat?", "este lumină suficientă pe panouri?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "207",
+    title: "Error 207 - DC input polarity reversed",
+    confidence: "ridicat",
+    meaning: "Polaritate DC inversată pe unul sau mai multe stringuri.",
+    checks: ["verifică plus/minus pe fiecare string", "verifică conectorii MC4", "verifică dacă a fost modificată recent instalația"],
+    action: ["oprește imediat DC", "corectează polaritatea stringului afectat", "repornește numai după verificarea polarității"],
+    service: ["cheamă service dacă persistă după corectarea polarității"],
+    ask: ["ai verificat polaritatea direct pe string?", "au fost lucrări recente pe DC?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "208",
+    title: "Error 208 - DC input voltage too low",
+    confidence: "ridicat",
+    meaning: "Tensiunea DC de intrare este prea mică pentru pornire.",
+    checks: ["verifică dacă există producție PV suficientă", "verifică tensiunea stringurilor", "verifică dacă este suficientă lumină solară"],
+    action: ["așteaptă creșterea tensiunii DC odată cu lumina", "verifică conexiunile DC dacă problema persistă la lumină bună"],
+    service: ["cheamă service dacă tensiunea este normală dar invertorul nu pornește"],
+    ask: ["ce tensiune DC ai măsurat?", "este suficientă lumină?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "209",
+    title: "Error 209 - PV input voltage too low",
+    confidence: "ridicat",
+    meaning: "Tensiunea PV de intrare este sub pragul minim de pornire.",
+    checks: ["verifică tensiunea stringurilor", "verifică dacă panourile sunt umbrite", "verifică conexiunile DC"],
+    action: ["verifică panourile și conexiunile DC", "așteaptă condiții mai bune de lumină"],
+    service: ["cheamă service dacă tensiunea este normală dar eroarea persistă"],
+    ask: ["există umbrire pe panouri?", "ce tensiune DC ai măsurat?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "210",
+    title: "Error 210 - No DC input",
+    confidence: "ridicat",
+    meaning: "Invertorul nu detectează tensiune DC la intrare.",
+    checks: ["verifică tensiunea PV la borne", "verifică siguranțele DC", "verifică deconectorul DC", "verifică conexiunile stringurilor"],
+    action: ["verifică siguranțele și deconectorul DC", "verifică tensiunea la borne DC"],
+    service: ["cheamă service dacă tensiunea PV este prezentă dar eroarea persistă"],
+    ask: ["ai tensiune DC la borne?", "siguranțele DC sunt intacte?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "401",
+    title: "Error 401 - Internal fault",
+    confidence: "mediu",
+    meaning: "Defect intern al invertorului.",
+    checks: ["repornește invertorul", "verifică dacă mai apar și alte coduri", "notează contextul și ora apariției"],
+    action: ["repornește controlat", "dacă persistă, notează toate codurile afișate"],
+    service: ["cheamă service dacă eroarea revine imediat sau frecvent"],
+    ask: ["mai apar și alte coduri simultan?", "eroarea apare la fiecare pornire?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "402",
+    title: "Error 402 - EEPROM read/write error",
+    confidence: "mediu",
+    meaning: "Eroare de citire/scriere a memoriei interne.",
+    checks: ["repornește invertorul", "verifică dacă eroarea persistă după restart", "verifică dacă există fluctuații de tensiune"],
+    action: ["repornește controlat", "dacă persistă, contactează service"],
+    service: ["cheamă service dacă eroarea revine după restart"],
+    ask: ["eroarea apare la fiecare pornire?", "au existat fluctuații de tensiune recent?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "403",
+    title: "Error 403 - Internal power supply fault",
+    confidence: "mediu",
+    meaning: "Defect al sursei de alimentare interne.",
+    checks: ["repornește invertorul", "verifică tensiunea DC și AC de intrare", "verifică dacă mai apar și alte coduri"],
+    action: ["repornește controlat", "dacă persistă, evită repornirile repetate"],
+    service: ["cheamă service dacă eroarea revine imediat"],
+    ask: ["eroarea apare imediat la pornire?", "mai apar și alte coduri?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "404",
+    title: "Error 404 - Hardware failure",
+    confidence: "mediu",
+    meaning: "Defect hardware intern al invertorului.",
+    checks: ["repornește invertorul", "verifică dacă mai apar și alte coduri asociate", "notează contextul"],
+    action: ["repornește o singură dată", "dacă persistă, nu reporniți repetat"],
+    service: ["cheamă service — probabil defect intern de hardware"],
+    ask: ["mai apar și alte coduri?", "eroarea apare la fiecare pornire?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "501",
+    title: "Error 501 - SPI communication fault",
+    confidence: "mediu",
+    meaning: "Eroare de comunicare SPI internă.",
+    checks: ["repornește invertorul", "verifică dacă eroarea persistă", "verifică dacă există interferențe electromagnetice"],
+    action: ["repornește controlat", "dacă persistă, contactează service"],
+    service: ["cheamă service dacă eroarea revine după restart"],
+    ask: ["eroarea apare constant sau intermitent?", "mai apar și alte coduri?"],
+  },
+
+  {
+    brand: "growatt",
+    model: "",
+    code: "502",
+    title: "Error 502 - DSP communication fault",
+    confidence: "mediu",
+    meaning: "Eroare de comunicare DSP internă.",
+    checks: ["repornește invertorul", "verifică dacă eroarea persistă", "notează frecvența apariției"],
+    action: ["repornește controlat", "dacă persistă, contactează service"],
+    service: ["cheamă service dacă eroarea revine frecvent"],
+    ask: ["eroarea apare la fiecare pornire?", "mai apar și alte coduri?"],
   },
 
   // ===== DEYE =====
@@ -125,14 +569,8 @@ export const errorCodes = [
     title: "F01 - Reverse polarity",
     confidence: "ridicat",
     meaning: "Polaritate inversată DC.",
-    checks: [
-      "verifică plus/minus pe string",
-      "verifică fiecare string separat",
-    ],
-    action: [
-      "corectează polaritatea",
-      "repornește doar după verificarea polarității",
-    ],
+    checks: ["verifică plus/minus pe string", "verifică fiecare string separat"],
+    action: ["corectează polaritatea", "repornește doar după verificarea polarității"],
     service: ["cheamă service dacă persistă"],
     ask: ["ai verificat polaritatea direct pe string?"],
   },
@@ -144,15 +582,8 @@ export const errorCodes = [
     title: "F02 - DC insulation fault",
     confidence: "ridicat",
     meaning: "Problemă de izolație DC.",
-    checks: [
-      "verifică cabluri PV",
-      "verifică umezeală",
-      "măsoară izolația stringurilor",
-    ],
-    action: [
-      "izolează stringul defect",
-      "repornește doar după remediere",
-    ],
+    checks: ["verifică cabluri PV", "verifică umezeală", "măsoară izolația stringurilor"],
+    action: ["izolează stringul defect", "repornește doar după remediere"],
     service: ["oprește dacă persistă"],
     ask: ["ai măsurat izolația?"],
   },
@@ -164,14 +595,8 @@ export const errorCodes = [
     title: "F03 - DC leakage",
     confidence: "ridicat",
     meaning: "Curent de scurgere DC.",
-    checks: [
-      "verifică izolația",
-      "inspectează conectorii și traseele",
-    ],
-    action: [
-      "izolează circuitul afectat",
-      "remediază scurgerea înainte de repornire",
-    ],
+    checks: ["verifică izolația", "inspectează conectorii și traseele"],
+    action: ["izolează circuitul afectat", "remediază scurgerea înainte de repornire"],
     service: ["cheamă service dacă persistă"],
     ask: ["apare intermitent sau pe umezeală?"],
   },
@@ -183,17 +608,153 @@ export const errorCodes = [
     title: "F04 - Ground fault GFDI",
     confidence: "ridicat",
     meaning: "Defect de punere la pământ.",
-    checks: [
-      "verifică cabluri PV",
-      "verifică conectori",
-      "inspectează cutiile de joncțiune",
-    ],
-    action: [
-      "izolează stringul suspect",
-      "repornește doar după eliminarea defectului",
-    ],
+    checks: ["verifică cabluri PV", "verifică conectori", "inspectează cutiile de joncțiune"],
+    action: ["izolează stringul suspect", "repornește doar după eliminarea defectului"],
     service: ["oprește dacă reapare"],
     ask: ["apare pe ploaie?"],
+  },
+
+  {
+    brand: "deye",
+    model: "",
+    code: "f05",
+    title: "F05 - Grid overvoltage",
+    confidence: "ridicat",
+    meaning: "Tensiunea rețelei depășește limita maximă admisă.",
+    checks: ["măsoară tensiunea AC la borne", "verifică dacă problema apare la anumite ore", "verifică secțiunea cablului AC"],
+    action: ["verifică rețeaua și conexiunile AC", "discută cu distribuitorul dacă tensiunea este constant mare"],
+    service: ["cheamă service dacă tensiunea este normală dar eroarea persistă"],
+    ask: ["ce tensiune AC ai măsurat?", "apare doar la anumite ore?"],
+  },
+
+  {
+    brand: "deye",
+    model: "",
+    code: "f06",
+    title: "F06 - Grid undervoltage",
+    confidence: "ridicat",
+    meaning: "Tensiunea rețelei este sub limita minimă admisă.",
+    checks: ["măsoară tensiunea AC", "verifică conexiunile și cablul AC", "verifică dacă există cădere de tensiune pe cablu"],
+    action: ["confirmă tensiunea rețelei", "verifică traseul și conexiunile AC"],
+    service: ["cheamă service dacă tensiunea este normală dar eroarea persistă"],
+    ask: ["ce tensiune AC ai măsurat?", "cablul AC este dimensionat corect?"],
+  },
+
+  {
+    brand: "deye",
+    model: "",
+    code: "f07",
+    title: "F07 - Grid overfrequency",
+    confidence: "ridicat",
+    meaning: "Frecvența rețelei depășește limita maximă admisă.",
+    checks: ["măsoară frecvența rețelei", "verifică dacă problema este temporară", "verifică dacă mai apar și alte alarme AC"],
+    action: ["așteaptă stabilizarea rețelei", "repornește după stabilizare"],
+    service: ["contactează operatorul de rețea dacă problema persistă"],
+    ask: ["ce frecvență ai măsurat?", "problema apare constant?"],
+  },
+
+  {
+    brand: "deye",
+    model: "",
+    code: "f08",
+    title: "F08 - Grid underfrequency",
+    confidence: "ridicat",
+    meaning: "Frecvența rețelei este sub limita minimă admisă.",
+    checks: ["măsoară frecvența rețelei", "verifică dacă problema este temporară", "verifică dacă mai apar și alte alarme AC"],
+    action: ["așteaptă stabilizarea rețelei", "repornește după stabilizare"],
+    service: ["contactează operatorul de rețea dacă problema persistă"],
+    ask: ["ce frecvență ai măsurat?", "mai apar și alte erori de rețea?"],
+  },
+
+  {
+    brand: "deye",
+    model: "",
+    code: "f09",
+    title: "F09 - Grid loss",
+    confidence: "ridicat",
+    meaning: "Invertorul nu detectează rețeaua AC.",
+    checks: ["verifică dacă există tensiune AC la borne", "verifică întrerupătorul și siguranțele AC", "verifică conexiunile AC"],
+    action: ["confirmă prezența rețelei", "verifică protecțiile AC", "repornește după verificare"],
+    service: ["cheamă service dacă rețeaua este prezentă dar eroarea persistă"],
+    ask: ["ai tensiune AC la borne?", "întrerupătorul AC este pornit?"],
+  },
+
+  {
+    brand: "deye",
+    model: "",
+    code: "f10",
+    title: "F10 - DC overvoltage",
+    confidence: "ridicat",
+    meaning: "Tensiunea DC de intrare depășește limita maximă admisă.",
+    checks: ["măsoară tensiunea stringului DC", "verifică numărul de panouri în serie", "verifică dacă temperatura scăzută a crescut Voc-ul"],
+    action: ["oprește DC dacă tensiunea depășește limita", "corectează dimensionarea stringului dacă e cazul"],
+    service: ["cheamă service dacă valorile sunt normale dar eroarea persistă"],
+    ask: ["ce tensiune DC ai măsurat?", "câte panouri sunt în serie?"],
+  },
+
+  {
+    brand: "deye",
+    model: "",
+    code: "f11",
+    title: "F11 - DC bus overvoltage",
+    confidence: "ridicat",
+    meaning: "Tensiunea bus-ului DC intern este prea mare.",
+    checks: ["verifică tensiunea DC de intrare", "repornește și urmărește dacă apare imediat", "verifică dacă mai apar și alte coduri"],
+    action: ["oprește invertorul", "verifică tensiunea DC înainte de repornire"],
+    service: ["cheamă service dacă eroarea persistă după restart"],
+    ask: ["ce tensiune DC ai măsurat?", "eroarea apare imediat la pornire?"],
+  },
+
+  {
+    brand: "deye",
+    model: "",
+    code: "f12",
+    title: "F12 - DC input overcurrent",
+    confidence: "ridicat",
+    meaning: "Curentul DC de intrare depășește limita admisă.",
+    checks: ["verifică numărul de panouri pe string", "verifică dimensionarea stringului", "verifică dacă există scurt pe DC"],
+    action: ["oprește DC", "verifică dimensionarea stringurilor"],
+    service: ["cheamă service dacă curentul este normal dar eroarea persistă"],
+    ask: ["câte panouri sunt pe string?", "ce curent ai măsurat?"],
+  },
+
+  {
+    brand: "deye",
+    model: "",
+    code: "f29",
+    title: "F29 - Over temperature",
+    confidence: "ridicat",
+    meaning: "Temperatura internă a invertorului a depășit limita admisă.",
+    checks: ["verifică ventilarea spațiului de montaj", "verifică dacă ventilatoarele funcționează", "verifică depunerile de praf pe radiator", "verifică temperatura ambientală"],
+    action: ["îmbunătățește ventilarea", "curăță radiatorul și ventilatoarele", "lasă invertorul să se răcească"],
+    service: ["cheamă service dacă ventilatoarele nu funcționează sau eroarea persistă la temperaturi normale"],
+    ask: ["invertorul este montat în soare direct?", "ventilatoarele pornesc?"],
+  },
+
+  {
+    brand: "deye",
+    model: "",
+    code: "f30",
+    title: "F30 - Fan fault",
+    confidence: "ridicat",
+    meaning: "Defect al ventilatorului intern.",
+    checks: ["verifică dacă ventilatorul se rotește", "verifică dacă există praf sau obstrucție", "ascultă dacă apar zgomote anormale"],
+    action: ["curăță ventilatorul", "dacă nu pornește, oprește invertorul pentru a evita supraîncălzirea"],
+    service: ["cheamă service pentru înlocuirea ventilatorului"],
+    ask: ["ventilatorul se rotește?", "există zgomote anormale?"],
+  },
+
+  {
+    brand: "deye",
+    model: "",
+    code: "f31",
+    title: "F31 - Internal hardware fault",
+    confidence: "mediu",
+    meaning: "Defect hardware intern al invertorului.",
+    checks: ["repornește invertorul", "verifică dacă mai apar și alte coduri asociate", "notează contextul"],
+    action: ["repornește o singură dată", "dacă persistă, nu reporniți repetat"],
+    service: ["cheamă service — probabil defect intern de hardware"],
+    ask: ["mai apar și alte coduri?", "eroarea apare la fiecare pornire?"],
   },
 
   // ===== GOODWE =====
@@ -204,24 +765,11 @@ export const errorCodes = [
     code: "utility loss",
     title: "Utility Loss",
     confidence: "ridicat",
-    meaning:
-      "Invertorul nu detectează rețeaua publică sau conexiunea on-grid a eșuat.",
-    checks: [
-      "verifică dacă AC side are tensiune cu multimetrul",
-      "verifică dacă rețeaua este disponibilă",
-      "verifică dacă cablurile AC sunt strânse și conectate corect",
-      "verifică dacă întrerupătorul AC este pornit",
-    ],
-    action: [
-      "confirmă prezența tensiunii AC înainte de repornire",
-      "strânge și verifică toate conexiunile AC",
-      "repornește invertorul doar după confirmarea rețelei",
-    ],
+    meaning: "Invertorul nu detectează rețeaua publică sau conexiunea on-grid a eșuat.",
+    checks: ["verifică dacă AC side are tensiune cu multimetrul", "verifică dacă rețeaua este disponibilă", "verifică dacă cablurile AC sunt strânse și conectate corect", "verifică dacă întrerupătorul AC este pornit"],
+    action: ["confirmă prezența tensiunii AC înainte de repornire", "strânge și verifică toate conexiunile AC", "repornește invertorul doar după confirmarea rețelei"],
     service: ["cheamă service dacă ai rețea normală dar eroarea persistă"],
-    ask: [
-      "ce tensiune AC ai măsurat?",
-      "întrerupătorul AC este pornit?",
-    ],
+    ask: ["ce tensiune AC ai măsurat?", "întrerupătorul AC este pornit?"],
   },
 
   {
@@ -230,26 +778,11 @@ export const errorCodes = [
     code: "grid overvoltage",
     title: "Grid Overvoltage",
     confidence: "ridicat",
-    meaning:
-      "Tensiunea rețelei depășește domeniul permis sau durata supratensiunii depășește limita admisă.",
-    checks: [
-      "măsoară tensiunea AC la bornele invertorului",
-      "verifică dacă problema apare când producția este mare",
-      "verifică secțiunea cablului AC și conexiunile",
-      "verifică dacă problema este temporară în rețea",
-    ],
-    action: [
-      "verifică traseul și căderea de tensiune pe cablu",
-      "verifică strângerea bornelor AC",
-      "dacă problema vine din rețea, discută cu distribuitorul",
-    ],
-    service: [
-      "cheamă service dacă măsurătorile sunt normale dar eroarea rămâne",
-    ],
-    ask: [
-      "ce tensiune ai măsurat pe AC?",
-      "apare doar la anumite ore?",
-    ],
+    meaning: "Tensiunea rețelei depășește domeniul permis sau durata supratensiunii depășește limita admisă.",
+    checks: ["măsoară tensiunea AC la bornele invertorului", "verifică dacă problema apare când producția este mare", "verifică secțiunea cablului AC și conexiunile", "verifică dacă problema este temporară în rețea"],
+    action: ["verifică traseul și căderea de tensiune pe cablu", "verifică strângerea bornelor AC", "dacă problema vine din rețea, discută cu distribuitorul"],
+    service: ["cheamă service dacă măsurătorile sunt normale dar eroarea rămâne"],
+    ask: ["ce tensiune ai măsurat pe AC?", "apare doar la anumite ore?"],
   },
 
   {
@@ -258,26 +791,63 @@ export const errorCodes = [
     code: "over temperature",
     title: "Over Temperature",
     confidence: "ridicat",
-    meaning:
-      "Temperatura internă a invertorului depășește pragul admis.",
-    checks: [
-      "verifică ventilarea locului de montaj",
-      "verifică dacă ventilatoarele funcționează",
-      "verifică temperatura ambientală",
-      "verifică depunerile de praf",
-    ],
-    action: [
-      "îmbunătățește ventilarea și răcirea",
-      "lasă invertorul să se răcească înainte de repornire",
-      "curăță traseele de aer și ventilatoarele",
-    ],
-    service: [
-      "cheamă service dacă ventilarea este bună și eroarea persistă",
-    ],
-    ask: [
-      "invertorul este montat într-un spațiu închis sau în soare direct?",
-      "ventilatoarele pornesc?",
-    ],
+    meaning: "Temperatura internă a invertorului depășește pragul admis.",
+    checks: ["verifică ventilarea locului de montaj", "verifică dacă ventilatoarele funcționează", "verifică temperatura ambientală", "verifică depunerile de praf"],
+    action: ["îmbunătățește ventilarea și răcirea", "lasă invertorul să se răcească înainte de repornire", "curăță traseele de aer și ventilatoarele"],
+    service: ["cheamă service dacă ventilarea este bună și eroarea persistă"],
+    ask: ["invertorul este montat într-un spațiu închis sau în soare direct?", "ventilatoarele pornesc?"],
+  },
+
+  {
+    brand: "goodwe",
+    model: "",
+    code: "grid undervoltage",
+    title: "Grid Undervoltage",
+    confidence: "ridicat",
+    meaning: "Tensiunea rețelei este sub limita minimă admisă de invertor.",
+    checks: ["măsoară tensiunea AC la borne", "verifică conexiunile și cablul AC", "verifică dacă există cădere de tensiune pe cablu"],
+    action: ["confirmă tensiunea rețelei", "verifică traseul și conexiunile AC"],
+    service: ["cheamă service dacă tensiunea este normală dar eroarea persistă"],
+    ask: ["ce tensiune AC ai măsurat?", "cablul AC este dimensionat corect?"],
+  },
+
+  {
+    brand: "goodwe",
+    model: "",
+    code: "dc overvoltage",
+    title: "DC Overvoltage",
+    confidence: "ridicat",
+    meaning: "Tensiunea DC de intrare depășește limita maximă admisă.",
+    checks: ["măsoară tensiunea stringului DC", "verifică numărul de panouri în serie", "verifică dacă temperatura scăzută a crescut Voc-ul"],
+    action: ["oprește DC dacă tensiunea depășește limita", "corectează dimensionarea stringului dacă e cazul"],
+    service: ["cheamă service dacă valorile sunt normale dar eroarea persistă"],
+    ask: ["ce tensiune DC ai măsurat?", "câte panouri sunt în serie?"],
+  },
+
+  {
+    brand: "goodwe",
+    model: "",
+    code: "isolation failure",
+    title: "Isolation Failure",
+    confidence: "ridicat",
+    meaning: "Rezistența de izolație pe partea PV este prea mică față de pământ.",
+    checks: ["inspectează cablurile PV pentru deteriorări sau umezeală", "verifică conectorii MC4", "măsoară rezistența de izolație a fiecărui string", "verifică cutiile de joncțiune"],
+    action: ["izolează stringul suspect", "remediază cablul sau conectorul defect", "repornește după eliminarea defectului"],
+    service: ["cheamă service dacă defectul persistă după verificări"],
+    ask: ["problema apare după ploaie?", "ai măsurat izolația stringurilor?"],
+  },
+
+  {
+    brand: "goodwe",
+    model: "",
+    code: "fan fault",
+    title: "Fan Fault",
+    confidence: "ridicat",
+    meaning: "Defect al ventilatorului intern al invertorului.",
+    checks: ["verifică dacă ventilatorul se rotește", "verifică dacă există praf sau obstrucție", "ascultă dacă apar zgomote anormale"],
+    action: ["curăță ventilatorul", "dacă nu pornește, oprește invertorul pentru a evita supraîncălzirea"],
+    service: ["cheamă service pentru înlocuirea ventilatorului"],
+    ask: ["ventilatorul se rotește?", "există zgomote anormale?"],
   },
 
   // ===== SOLIS =====
@@ -289,20 +859,10 @@ export const errorCodes = [
     title: "NO-GRID",
     confidence: "ridicat",
     meaning: "Invertorul nu detectează tensiune de rețea.",
-    checks: [
-      "verifică conexiunile AC și întrerupătorul de rețea",
-      "măsoară tensiunea AC la bornele invertorului",
-      "verifică dacă rețeaua este prezentă și stabilă",
-    ],
-    action: [
-      "confirmă rețeaua înainte de repornire",
-      "verifică bornele și siguranțele AC",
-    ],
+    checks: ["verifică conexiunile AC și întrerupătorul de rețea", "măsoară tensiunea AC la bornele invertorului", "verifică dacă rețeaua este prezentă și stabilă"],
+    action: ["confirmă rețeaua înainte de repornire", "verifică bornele și siguranțele AC"],
     service: ["cheamă service dacă rețeaua este normală dar alarma persistă"],
-    ask: [
-      "ce tensiune AC ai măsurat?",
-      "apare permanent sau intermitent?",
-    ],
+    ask: ["ce tensiune AC ai măsurat?", "apare permanent sau intermitent?"],
   },
 
   {
@@ -312,20 +872,10 @@ export const errorCodes = [
     title: "OV-TEM",
     confidence: "ridicat",
     meaning: "Invertorul a intrat în supratemperatură.",
-    checks: [
-      "verifică ventilarea invertorului",
-      "verifică dacă este expus direct la soare",
-      "verifică dacă există praf sau blocaj al răcirii",
-    ],
-    action: [
-      "îmbunătățește ventilarea",
-      "lasă invertorul să se răcească înainte de repornire",
-    ],
+    checks: ["verifică ventilarea invertorului", "verifică dacă este expus direct la soare", "verifică dacă există praf sau blocaj al răcirii"],
+    action: ["îmbunătățește ventilarea", "lasă invertorul să se răcească înainte de repornire"],
     service: ["cheamă service dacă apare la temperaturi normale"],
-    ask: [
-      "invertorul este montat într-un spațiu închis?",
-      "apare doar la prânz sau și dimineața?",
-    ],
+    ask: ["invertorul este montat într-un spațiu închis?", "apare doar la prânz sau și dimineața?"],
   },
 
   {
@@ -335,21 +885,10 @@ export const errorCodes = [
     title: "OV-G-V",
     confidence: "ridicat",
     meaning: "Tensiunea rețelei este prea mare.",
-    checks: [
-      "măsoară tensiunea AC la borne",
-      "verifică dacă rezistența cablului AC este prea mare",
-      "verifică dacă problema apare când producția este ridicată",
-    ],
-    action: [
-      "folosește cablu AC dimensionat corect",
-      "verifică bornele și conexiunile",
-      "modifică pragul doar dacă este permis de operatorul de rețea",
-    ],
+    checks: ["măsoară tensiunea AC la borne", "verifică dacă rezistența cablului AC este prea mare", "verifică dacă problema apare când producția este ridicată"],
+    action: ["folosește cablu AC dimensionat corect", "verifică bornele și conexiunile", "modifică pragul doar dacă este permis de operatorul de rețea"],
     service: ["cheamă service dacă tensiunile sunt normale dar alarma persistă"],
-    ask: [
-      "ce tensiune AC ai măsurat?",
-      "ce secțiune are cablul AC?",
-    ],
+    ask: ["ce tensiune AC ai măsurat?", "ce secțiune are cablul AC?"],
   },
 
   {
@@ -359,20 +898,10 @@ export const errorCodes = [
     title: "GRID-INTF",
     confidence: "ridicat",
     meaning: "Invertorul detectează interferență sau anomalie pe rețea.",
-    checks: [
-      "verifică stabilitatea rețelei",
-      "verifică bornele și contactele AC",
-      "verifică dacă mai apar și alte alarme de rețea",
-    ],
-    action: [
-      "repornește după verificarea rețelei",
-      "urmărește dacă alarma reapare în anumite intervale",
-    ],
+    checks: ["verifică stabilitatea rețelei", "verifică bornele și contactele AC", "verifică dacă mai apar și alte alarme de rețea"],
+    action: ["repornește după verificarea rețelei", "urmărește dacă alarma reapare în anumite intervale"],
     service: ["cheamă service dacă apare frecvent cu rețea aparent normală"],
-    ask: [
-      "mai apar și alte alarme AC?",
-      "problema apare doar în anumite ore?",
-    ],
+    ask: ["mai apar și alte alarme AC?", "problema apare doar în anumite ore?"],
   },
 
   {
@@ -382,20 +911,10 @@ export const errorCodes = [
     title: "Reverse-GRID",
     confidence: "ridicat",
     meaning: "Polaritate AC greșită sau problemă pe conexiunea de rețea.",
-    checks: [
-      "verifică polaritatea și ordinea conexiunilor AC",
-      "verifică bornele și cablurile AC",
-      "verifică dacă instalația a fost recent modificată",
-    ],
-    action: [
-      "corectează conexiunea AC",
-      "repornește numai după verificarea polarității",
-    ],
+    checks: ["verifică polaritatea și ordinea conexiunilor AC", "verifică bornele și cablurile AC", "verifică dacă instalația a fost recent modificată"],
+    action: ["corectează conexiunea AC", "repornește numai după verificarea polarității"],
     service: ["cheamă service dacă eroarea persistă după reconectare corectă"],
-    ask: [
-      "ai făcut lucrări recente pe partea AC?",
-      "ai verificat polaritatea la borne?",
-    ],
+    ask: ["ai făcut lucrări recente pe partea AC?", "ai verificat polaritatea la borne?"],
   },
 
   {
@@ -405,20 +924,62 @@ export const errorCodes = [
     title: "DCinj-FAULT",
     confidence: "ridicat",
     meaning: "Curent de injecție DC ridicat.",
-    checks: [
-      "verifică conexiunile AC și DC",
-      "verifică dacă mai apar și alte alarme asociate",
-      "urmărește dacă eroarea apare imediat după pornire",
-    ],
-    action: [
-      "repornește invertorul",
-      "dacă reapare, contactează instalatorul sau service-ul",
-    ],
+    checks: ["verifică conexiunile AC și DC", "verifică dacă mai apar și alte alarme asociate", "urmărește dacă eroarea apare imediat după pornire"],
+    action: ["repornește invertorul", "dacă reapare, contactează instalatorul sau service-ul"],
     service: ["cheamă service dacă eroarea persistă după restart"],
-    ask: [
-      "eroarea apare imediat după pornire?",
-      "mai apar și alte coduri?",
-    ],
+    ask: ["eroarea apare imediat după pornire?", "mai apar și alte coduri?"],
+  },
+
+  {
+    brand: "solis",
+    model: "",
+    code: "ov-dc-v",
+    title: "OV-DC-V",
+    confidence: "ridicat",
+    meaning: "Tensiunea DC de intrare depășește limita maximă admisă.",
+    checks: ["măsoară tensiunea stringului DC", "verifică numărul de panouri în serie", "verifică dacă temperatura scăzută a crescut Voc-ul"],
+    action: ["oprește DC dacă tensiunea depășește limita", "corectează dimensionarea stringului dacă e cazul"],
+    service: ["cheamă service dacă valorile sunt normale dar eroarea persistă"],
+    ask: ["ce tensiune DC ai măsurat?", "câte panouri sunt în serie?"],
+  },
+
+  {
+    brand: "solis",
+    model: "",
+    code: "un-dc-v",
+    title: "UN-DC-V",
+    confidence: "ridicat",
+    meaning: "Tensiunea DC de intrare este sub limita minimă de pornire.",
+    checks: ["verifică tensiunea stringurilor", "verifică dacă panourile sunt umbrite", "verifică conexiunile DC"],
+    action: ["verifică panourile și conexiunile DC", "așteaptă condiții mai bune de lumină"],
+    service: ["cheamă service dacă tensiunea este normală dar eroarea persistă"],
+    ask: ["există umbrire pe panouri?", "ce tensiune DC ai măsurat?"],
+  },
+
+  {
+    brand: "solis",
+    model: "",
+    code: "iso-fault",
+    title: "ISO-FAULT",
+    confidence: "ridicat",
+    meaning: "Rezistența de izolație pe partea PV este prea mică față de pământ.",
+    checks: ["inspectează cablurile PV pentru deteriorări sau umezeală", "verifică conectorii MC4", "măsoară rezistența de izolație a fiecărui string"],
+    action: ["izolează stringul suspect", "remediază cablul sau conectorul defect", "repornește după eliminarea defectului"],
+    service: ["cheamă service dacă defectul persistă după verificări"],
+    ask: ["problema apare după ploaie?", "ai măsurat izolația stringurilor?"],
+  },
+
+  {
+    brand: "solis",
+    model: "",
+    code: "pv-short",
+    title: "PV-SHORT",
+    confidence: "ridicat",
+    meaning: "Scurtcircuit detectat pe partea PV.",
+    checks: ["verifică dacă există scurt între plus și minus pe string", "inspectează conectorii și cablurile", "verifică cutiile de joncțiune"],
+    action: ["oprește imediat DC", "identifică și remediază scurtcircuitul", "repornește numai după remediere"],
+    service: ["cheamă service dacă nu poți identifica scurtcircuitul"],
+    ask: ["ai măsurat rezistența între + și - pe string?", "există conectori deteriorați?"],
   },
 
   // ===== SUNGROW =====
@@ -429,25 +990,11 @@ export const errorCodes = [
     code: "grid overvoltage",
     title: "Grid Overvoltage",
     confidence: "ridicat",
-    meaning:
-      "Tensiunea rețelei este peste pragul de protecție detectat de invertor.",
-    checks: [
-      "măsoară tensiunea AC la bornele invertorului",
-      "verifică dacă problema apare la anumite ore",
-      "verifică conexiunile și traseul AC",
-    ],
-    action: [
-      "așteaptă revenirea rețelei în limite dacă este eveniment temporar",
-      "verifică bornele și conexiunile AC",
-      "dacă problema persistă, discută cu distribuitorul",
-    ],
-    service: [
-      "cheamă service dacă tensiunea măsurată este normală dar alarma persistă",
-    ],
-    ask: [
-      "ce tensiune AC ai măsurat?",
-      "problema este continuă sau intermitentă?",
-    ],
+    meaning: "Tensiunea rețelei este peste pragul de protecție detectat de invertor.",
+    checks: ["măsoară tensiunea AC la bornele invertorului", "verifică dacă problema apare la anumite ore", "verifică conexiunile și traseul AC"],
+    action: ["așteaptă revenirea rețelei în limite dacă este eveniment temporar", "verifică bornele și conexiunile AC", "dacă problema persistă, discută cu distribuitorul"],
+    service: ["cheamă service dacă tensiunea măsurată este normală dar alarma persistă"],
+    ask: ["ce tensiune AC ai măsurat?", "problema este continuă sau intermitentă?"],
   },
 
   {
@@ -456,24 +1003,11 @@ export const errorCodes = [
     code: "grid underfrequency",
     title: "Grid Underfrequency",
     confidence: "ridicat",
-    meaning:
-      "Frecvența rețelei este sub limita de protecție detectată de invertor.",
-    checks: [
-      "verifică frecvența rețelei",
-      "verifică dacă există fluctuații de rețea sau alte alarme AC",
-      "verifică dacă problema apare în același interval orar",
-    ],
-    action: [
-      "așteaptă stabilizarea rețelei dacă evenimentul este temporar",
-      "verifică parametrii rețelei înainte de repornire",
-    ],
-    service: [
-      "cheamă service sau operatorul de rețea dacă problema persistă",
-    ],
-    ask: [
-      "ce frecvență ai măsurat?",
-      "mai apar și alte alarme de rețea?",
-    ],
+    meaning: "Frecvența rețelei este sub limita de protecție detectată de invertor.",
+    checks: ["verifică frecvența rețelei", "verifică dacă există fluctuații de rețea sau alte alarme AC", "verifică dacă problema apare în același interval orar"],
+    action: ["așteaptă stabilizarea rețelei dacă evenimentul este temporar", "verifică parametrii rețelei înainte de repornire"],
+    service: ["cheamă service sau operatorul de rețea dacă problema persistă"],
+    ask: ["ce frecvență ai măsurat?", "mai apar și alte alarme de rețea?"],
   },
 
   {
@@ -482,24 +1016,50 @@ export const errorCodes = [
     code: "grid power outage",
     title: "Grid Power Outage",
     confidence: "ridicat",
-    meaning:
-      "Rețeaua AC este absentă sau întreruptă; invertorul se reconectează de obicei după revenirea rețelei la normal.",
-    checks: [
-      "verifică dacă există tensiune AC la borne",
-      "verifică întrerupătorul și protecțiile AC",
-      "verifică dacă este o întrerupere generală de rețea",
-    ],
-    action: [
-      "confirmă revenirea rețelei înainte de repornire",
-      "verifică bornele și conexiunile AC",
-    ],
-    service: [
-      "cheamă service dacă rețeaua este prezentă dar alarma persistă",
-    ],
-    ask: [
-      "ai tensiune AC la borne?",
-      "problema apare după căderi de rețea?",
-    ],
+    meaning: "Rețeaua AC este absentă sau întreruptă; invertorul se reconectează de obicei după revenirea rețelei la normal.",
+    checks: ["verifică dacă există tensiune AC la borne", "verifică întrerupătorul și protecțiile AC", "verifică dacă este o întrerupere generală de rețea"],
+    action: ["confirmă revenirea rețelei înainte de repornire", "verifică bornele și conexiunile AC"],
+    service: ["cheamă service dacă rețeaua este prezentă dar alarma persistă"],
+    ask: ["ai tensiune AC la borne?", "problema apare după căderi de rețea?"],
+  },
+
+  {
+    brand: "sungrow",
+    model: "",
+    code: "dc insulation fault",
+    title: "DC Insulation Fault",
+    confidence: "ridicat",
+    meaning: "Rezistența de izolație pe partea DC este prea mică față de pământ.",
+    checks: ["inspectează cablurile PV pentru deteriorări sau umezeală", "verifică conectorii MC4", "măsoară rezistența de izolație a fiecărui string"],
+    action: ["izolează stringul suspect", "remediază cablul sau conectorul defect", "repornește după eliminarea defectului"],
+    service: ["cheamă service dacă defectul persistă după verificări"],
+    ask: ["problema apare după ploaie?", "ai măsurat izolația stringurilor?"],
+  },
+
+  {
+    brand: "sungrow",
+    model: "",
+    code: "pv string fault",
+    title: "PV String Fault",
+    confidence: "ridicat",
+    meaning: "Defect detectat pe unul sau mai multe stringuri PV.",
+    checks: ["măsoară tensiunea fiecărui string DC", "verifică dacă există panouri defecte sau umbrite", "verifică conectorii și cablurile stringului afectat"],
+    action: ["identifică stringul cu defect", "verifică conexiunile și starea panourilor"],
+    service: ["cheamă service dacă stringul pare normal dar eroarea persistă"],
+    ask: ["ce tensiuni ai pe fiecare string?", "există panouri umbrite sau defecte?"],
+  },
+
+  {
+    brand: "sungrow",
+    model: "",
+    code: "fan failure",
+    title: "Fan Failure",
+    confidence: "ridicat",
+    meaning: "Defect al ventilatorului intern.",
+    checks: ["verifică dacă ventilatorul se rotește", "verifică dacă există praf sau obstrucție", "ascultă dacă apar zgomote anormale"],
+    action: ["curăță ventilatorul", "dacă nu pornește, oprește invertorul pentru a evita supraîncălzirea"],
+    service: ["cheamă service pentru înlocuirea ventilatorului"],
+    ask: ["ventilatorul se rotește?", "există zgomote anormale?"],
   },
 
   // ===== FRONIUS =====
@@ -510,25 +1070,11 @@ export const errorCodes = [
     code: "102",
     title: "Code 102 - AC voltage too high",
     confidence: "ridicat",
-    meaning:
-      "Tensiunea AC este prea mare; invertorul reia de obicei alimentarea când condițiile rețelei revin în limite.",
-    checks: [
-      "măsoară tensiunea AC la bornele invertorului",
-      "verifică dacă problema apare la anumite ore",
-      "verifică conexiunile și secțiunea cablului AC",
-    ],
-    action: [
-      "verifică conexiunile la rețea",
-      "urmărește dacă tensiunea revine în intervalul admis",
-      "dacă problema persistă, discută cu operatorul de rețea sau instalatorul",
-    ],
-    service: [
-      "cheamă service dacă statusul revine frecvent cu măsurători AC aparent normale",
-    ],
-    ask: [
-      "ce tensiune AC ai măsurat?",
-      "apare doar în anumite intervale?",
-    ],
+    meaning: "Tensiunea AC este prea mare; invertorul reia de obicei alimentarea când condițiile rețelei revin în limite.",
+    checks: ["măsoară tensiunea AC la bornele invertorului", "verifică dacă problema apare la anumite ore", "verifică conexiunile și secțiunea cablului AC"],
+    action: ["verifică conexiunile la rețea", "urmărește dacă tensiunea revine în intervalul admis", "dacă problema persistă, discută cu operatorul de rețea sau instalatorul"],
+    service: ["cheamă service dacă statusul revine frecvent cu măsurători AC aparent normale"],
+    ask: ["ce tensiune AC ai măsurat?", "apare doar în anumite intervale?"],
   },
 
   {
@@ -537,24 +1083,11 @@ export const errorCodes = [
     code: "103",
     title: "Code 103 - AC voltage too low",
     confidence: "ridicat",
-    meaning:
-      "Tensiunea AC este sub limita admisă pentru funcționare normală.",
-    checks: [
-      "măsoară tensiunea AC la bornele invertorului",
-      "verifică întrerupătorul și conexiunile AC",
-      "verifică dacă există cădere de tensiune pe cablu",
-    ],
-    action: [
-      "confirmă tensiunea rețelei înainte de repornire",
-      "verifică traseul și conexiunile AC",
-    ],
-    service: [
-      "cheamă service dacă tensiunea pare normală dar alarma persistă",
-    ],
-    ask: [
-      "ce tensiune AC ai măsurat?",
-      "apare cu sarcină mare sau constant?",
-    ],
+    meaning: "Tensiunea AC este sub limita admisă pentru funcționare normală.",
+    checks: ["măsoară tensiunea AC la bornele invertorului", "verifică întrerupătorul și conexiunile AC", "verifică dacă există cădere de tensiune pe cablu"],
+    action: ["confirmă tensiunea rețelei înainte de repornire", "verifică traseul și conexiunile AC"],
+    service: ["cheamă service dacă tensiunea pare normală dar alarma persistă"],
+    ask: ["ce tensiune AC ai măsurat?", "apare cu sarcină mare sau constant?"],
   },
 
   {
@@ -563,24 +1096,11 @@ export const errorCodes = [
     code: "105",
     title: "Code 105 - AC frequency too high",
     confidence: "ridicat",
-    meaning:
-      "Frecvența rețelei este peste limita admisă de invertor.",
-    checks: [
-      "măsoară frecvența rețelei",
-      "verifică dacă mai apar și alte alarme de rețea",
-      "verifică dacă problema este temporară",
-    ],
-    action: [
-      "așteaptă stabilizarea rețelei",
-      "verifică parametrii AC înainte de repornire",
-    ],
-    service: [
-      "contactează operatorul de rețea sau service dacă problema persistă",
-    ],
-    ask: [
-      "ce frecvență ai măsurat?",
-      "alarma apare continuu sau intermitent?",
-    ],
+    meaning: "Frecvența rețelei este peste limita admisă de invertor.",
+    checks: ["măsoară frecvența rețelei", "verifică dacă mai apar și alte alarme de rețea", "verifică dacă problema este temporară"],
+    action: ["așteaptă stabilizarea rețelei", "verifică parametrii AC înainte de repornire"],
+    service: ["contactează operatorul de rețea sau service dacă problema persistă"],
+    ask: ["ce frecvență ai măsurat?", "alarma apare continuu sau intermitent?"],
   },
 
   {
@@ -589,24 +1109,11 @@ export const errorCodes = [
     code: "106",
     title: "Code 106 - AC frequency too low",
     confidence: "ridicat",
-    meaning:
-      "Frecvența rețelei este sub limita admisă de invertor.",
-    checks: [
-      "măsoară frecvența rețelei",
-      "verifică dacă mai apar și alte alarme AC",
-      "verifică dacă problema apare în aceleași intervale",
-    ],
-    action: [
-      "așteaptă stabilizarea rețelei dacă evenimentul este temporar",
-      "verifică parametrii rețelei înainte de repornire",
-    ],
-    service: [
-      "contactează operatorul de rețea sau service dacă problema persistă",
-    ],
-    ask: [
-      "ce frecvență ai măsurat?",
-      "mai apar și alte erori de rețea?",
-    ],
+    meaning: "Frecvența rețelei este sub limita admisă de invertor.",
+    checks: ["măsoară frecvența rețelei", "verifică dacă mai apar și alte alarme AC", "verifică dacă problema apare în aceleași intervale"],
+    action: ["așteaptă stabilizarea rețelei dacă evenimentul este temporar", "verifică parametrii rețelei înainte de repornire"],
+    service: ["contactează operatorul de rețea sau service dacă problema persistă"],
+    ask: ["ce frecvență ai măsurat?", "mai apar și alte erori de rețea?"],
   },
 
   {
@@ -615,24 +1122,63 @@ export const errorCodes = [
     code: "107",
     title: "Code 107 - No AC grid detected",
     confidence: "ridicat",
-    meaning:
-      "Invertorul nu detectează rețeaua AC.",
-    checks: [
-      "verifică dacă există tensiune AC la borne",
-      "verifică protecțiile și întrerupătorul AC",
-      "verifică conexiunile AC",
-    ],
-    action: [
-      "confirmă prezența rețelei înainte de repornire",
-      "verifică siguranțele și conexiunile AC",
-    ],
-    service: [
-      "cheamă service dacă rețeaua este prezentă dar alarma persistă",
-    ],
-    ask: [
-      "ce tensiune AC ai măsurat?",
-      "întrerupătorul AC este pornit?",
-    ],
+    meaning: "Invertorul nu detectează rețeaua AC.",
+    checks: ["verifică dacă există tensiune AC la borne", "verifică protecțiile și întrerupătorul AC", "verifică conexiunile AC"],
+    action: ["confirmă prezența rețelei înainte de repornire", "verifică siguranțele și conexiunile AC"],
+    service: ["cheamă service dacă rețeaua este prezentă dar alarma persistă"],
+    ask: ["ce tensiune AC ai măsurat?", "întrerupătorul AC este pornit?"],
+  },
+
+  {
+    brand: "fronius",
+    model: "",
+    code: "301",
+    title: "Code 301 - Overcurrent AC",
+    confidence: "ridicat",
+    meaning: "Supracurent pe ieșirea AC.",
+    checks: ["verifică dacă există scurt pe partea AC", "verifică conexiunile AC", "verifică dacă invertorul este suprasolicitat"],
+    action: ["oprește invertorul", "verifică partea AC înainte de repornire"],
+    service: ["cheamă service dacă eroarea persistă"],
+    ask: ["există scurt pe AC?", "ce sarcină AC există?"],
+  },
+
+  {
+    brand: "fronius",
+    model: "",
+    code: "302",
+    title: "Code 302 - Overcurrent DC",
+    confidence: "ridicat",
+    meaning: "Supracurent pe intrarea DC.",
+    checks: ["verifică numărul de panouri pe string", "verifică dimensionarea stringului", "verifică dacă există scurt pe DC"],
+    action: ["oprește DC", "verifică dimensionarea stringurilor"],
+    service: ["cheamă service dacă curentul este normal dar eroarea persistă"],
+    ask: ["câte panouri sunt pe string?", "ce curent ai măsurat?"],
+  },
+
+  {
+    brand: "fronius",
+    model: "",
+    code: "303",
+    title: "Code 303 - DC input voltage too high",
+    confidence: "ridicat",
+    meaning: "Tensiunea DC de intrare depășește limita maximă admisă.",
+    checks: ["măsoară tensiunea stringului DC", "verifică numărul de panouri în serie", "verifică dacă temperatura scăzută a crescut Voc-ul"],
+    action: ["oprește DC dacă tensiunea depășește limita", "corectează dimensionarea stringului dacă e cazul"],
+    service: ["cheamă service dacă valorile sunt normale dar eroarea persistă"],
+    ask: ["ce tensiune DC ai măsurat?", "câte panouri sunt în serie?"],
+  },
+
+  {
+    brand: "fronius",
+    model: "",
+    code: "304",
+    title: "Code 304 - DC input voltage too low",
+    confidence: "ridicat",
+    meaning: "Tensiunea DC de intrare este sub pragul minim de pornire.",
+    checks: ["verifică tensiunea stringurilor", "verifică dacă panourile sunt umbrite", "verifică conexiunile DC"],
+    action: ["verifică panourile și conexiunile DC", "așteaptă condiții mai bune de lumină"],
+    service: ["cheamă service dacă tensiunea este normală dar eroarea persistă"],
+    ask: ["există umbrire pe panouri?", "ce tensiune DC ai măsurat?"],
   },
 
   {
@@ -641,24 +1187,11 @@ export const errorCodes = [
     code: "463",
     title: "Code 463 - Reversed AC polarity",
     confidence: "ridicat",
-    meaning:
-      "Polaritate AC inversată sau conector AC introdus incorect.",
-    checks: [
-      "verifică polaritatea și ordinea conexiunilor AC",
-      "verifică dacă a fost modificată recent instalația",
-      "verifică bornele și cablurile AC",
-    ],
-    action: [
-      "corectează conexiunea AC",
-      "repornește doar după verificarea polarității",
-    ],
-    service: [
-      "cheamă service dacă alarma persistă după reconectare corectă",
-    ],
-    ask: [
-      "ai făcut lucrări recente pe partea AC?",
-      "ai verificat polaritatea la borne?",
-    ],
+    meaning: "Polaritate AC inversată sau conector AC introdus incorect.",
+    checks: ["verifică polaritatea și ordinea conexiunilor AC", "verifică dacă a fost modificată recent instalația", "verifică bornele și cablurile AC"],
+    action: ["corectează conexiunea AC", "repornește doar după verificarea polarității"],
+    service: ["cheamă service dacă alarma persistă după reconectare corectă"],
+    ask: ["ai făcut lucrări recente pe partea AC?", "ai verificat polaritatea la borne?"],
   },
 
   {
@@ -667,22 +1200,11 @@ export const errorCodes = [
     code: "474",
     title: "Code 474 - RCMU sensor faulty",
     confidence: "ridicat",
-    meaning:
-      "Senzorul RCMU raportează defect sau funcționare anormală.",
-    checks: [
-      "verifică dacă mai apar și alte alarme de izolație sau pământ",
-      "verifică împământarea și cablurile relevante",
-      "repornește și urmărește dacă alarma reapare imediat",
-    ],
-    action: [
-      "efectuează un AC reset și verifică împământarea",
-      "dacă revine, evită repornirile repetate",
-    ],
+    meaning: "Senzorul RCMU raportează defect sau funcționare anormală.",
+    checks: ["verifică dacă mai apar și alte alarme de izolație sau pământ", "verifică împământarea și cablurile relevante", "repornește și urmărește dacă alarma reapare imediat"],
+    action: ["efectuează un AC reset și verifică împământarea", "dacă revine, evită repornirile repetate"],
     service: ["cheamă service dacă statusul revine frecvent"],
-    ask: [
-      "mai apar și alte alarme de izolație?",
-      "alarma revine imediat după restart?",
-    ],
+    ask: ["mai apar și alte alarme de izolație?", "alarma revine imediat după restart?"],
   },
 
   {
@@ -691,24 +1213,11 @@ export const errorCodes = [
     code: "475",
     title: "Code 475 - Insulation fault",
     confidence: "ridicat",
-    meaning:
-      "Defect de izolație între modulul solar și pământ.",
-    checks: [
-      "verifică izolația stringurilor PV",
-      "inspectează cablurile și conectorii pentru umezeală sau deteriorări",
-      "măsoară rezistența de izolație dacă ai echipament adecvat",
-    ],
-    action: [
-      "izolează stringul suspect",
-      "remediază cablul sau conectorul defect înainte de repornire",
-    ],
-    service: [
-      "cheamă service dacă defectul persistă după verificările de izolație",
-    ],
-    ask: [
-      "ai măsurat rezistența de izolație?",
-      "problema apare pe timp umed sau constant?",
-    ],
+    meaning: "Defect de izolație între modulul solar și pământ.",
+    checks: ["verifică izolația stringurilor PV", "inspectează cablurile și conectorii pentru umezeală sau deteriorări", "măsoară rezistența de izolație dacă ai echipament adecvat"],
+    action: ["izolează stringul suspect", "remediază cablul sau conectorul defect înainte de repornire"],
+    service: ["cheamă service dacă defectul persistă după verificările de izolație"],
+    ask: ["ai măsurat rezistența de izolație?", "problema apare pe timp umed sau constant?"],
   },
 
   {
@@ -717,25 +1226,11 @@ export const errorCodes = [
     code: "517",
     title: "Code 517 - Power derating caused by too high a temperature",
     confidence: "ridicat",
-    meaning:
-      "Invertorul reduce puterea din cauza temperaturii prea mari.",
-    checks: [
-      "verifică ventilatoarele și orificiile de răcire",
-      "verifică dacă există praf sau blocaj de aer",
-      "verifică temperatura ambientală și locul de montaj",
-    ],
-    action: [
-      "curăță traseele de aer și radiatorul",
-      "lasă invertorul să se răcească",
-      "îmbunătățește ventilarea spațiului",
-    ],
-    service: [
-      "cheamă service dacă derating-ul persistă la temperaturi normale",
-    ],
-    ask: [
-      "ventilatoarele funcționează?",
-      "invertorul este montat în soare direct sau spațiu închis?",
-    ],
+    meaning: "Invertorul reduce puterea din cauza temperaturii prea mari.",
+    checks: ["verifică ventilatoarele și orificiile de răcire", "verifică dacă există praf sau blocaj de aer", "verifică temperatura ambientală și locul de montaj"],
+    action: ["curăță traseele de aer și radiatorul", "lasă invertorul să se răcească", "îmbunătățește ventilarea spațiului"],
+    service: ["cheamă service dacă derating-ul persistă la temperaturi normale"],
+    ask: ["ventilatoarele funcționează?", "invertorul este montat în soare direct sau spațiu închis?"],
   },
 
   // ===== HUAWEI =====
@@ -743,105 +1238,27 @@ export const errorCodes = [
   {
     brand: "huawei",
     model: "",
-    code: "2031",
-    title: "2031 - Phase wire short-circuited to PE",
+    code: "2001",
+    title: "2001 - Grid overvoltage",
     confidence: "ridicat",
-    meaning:
-      "Conductorul de fază este în scurt la PE sau impedanța către PE este prea mică.",
-    checks: [
-      "verifică dacă există scurt sau impedanță mică între fază și PE",
-      "verifică cablul AC și bornele",
-      "verifică dacă a fost modificată recent instalația AC",
-    ],
-    action: [
-      "remediază defectul pe partea AC înainte de repornire",
-      "repornește doar după verificarea izolării și conexiunilor",
-    ],
-    service: [
-      "cheamă service dacă alarma persistă după verificarea cablajului AC",
-    ],
-    ask: [
-      "ai verificat cablul de fază către PE?",
-      "au fost lucrări recente pe partea AC?",
-    ],
+    meaning: "Tensiunea rețelei depășește limita maximă admisă.",
+    checks: ["măsoară tensiunea AC la borne", "verifică dacă problema apare la anumite ore", "verifică secțiunea cablului AC"],
+    action: ["verifică rețeaua și conexiunile AC", "discută cu distribuitorul dacă tensiunea este constant mare"],
+    service: ["cheamă service dacă tensiunea este normală dar eroarea persistă"],
+    ask: ["ce tensiune AC ai măsurat?", "apare doar la anumite ore?"],
   },
 
   {
     brand: "huawei",
     model: "",
-    code: "2032",
-    title: "2032 - Grid Failed",
+    code: "2002",
+    title: "2002 - Grid undervoltage",
     confidence: "ridicat",
-    meaning:
-      "Invertorul detectează problemă pe rețeaua AC.",
-    checks: [
-      "verifică dacă tensiunea AC este normală",
-      "verifică dacă circuitul AC este întrerupt sau întrerupătorul AC este OFF",
-      "verifică bornele și conexiunile AC",
-    ],
-    action: [
-      "confirmă rețeaua și conexiunile AC înainte de repornire",
-      "repornește doar după stabilizarea rețelei",
-    ],
-    service: [
-      "cheamă service dacă tensiunea AC este normală dar alarma persistă",
-    ],
-    ask: [
-      "ce tensiune AC ai măsurat?",
-      "întrerupătorul AC este pornit?",
-    ],
-  },
-
-  {
-    brand: "huawei",
-    model: "",
-    code: "2051",
-    title: "2051 - Abnormal Residual Current",
-    confidence: "ridicat",
-    meaning:
-      "Invertorul detectează curent rezidual anormal.",
-    checks: [
-      "verifică dacă există alarmă de scurt la pământ pe string, izolație mică sau fault la pământ",
-      "verifică cablurile și conectorii pentru umezeală sau deteriorări",
-      "verifică împământarea și starea traseelor PV",
-    ],
-    action: [
-      "elimină cauza externă, apoi repornește",
-      "dacă apare ocazional, urmărește dacă sistemul își revine după remedierea cauzei",
-    ],
-    service: [
-      "cheamă service dacă alarma apare frecvent sau persistă",
-    ],
-    ask: [
-      "mai apar și alarme de izolație sau scurt la pământ?",
-      "problema apare pe timp umed?",
-    ],
-  },
-
-  {
-    brand: "huawei",
-    model: "",
-    code: "2062",
-    title: "2062 - Low Insulation Resistance",
-    confidence: "ridicat",
-    meaning:
-      "Rezistența de izolație pe partea PV este prea mică.",
-    checks: [
-      "verifică dacă există scurt între PV și pământ",
-      "verifică dacă mediul este umed și a scăzut izolația",
-      "măsoară rezistența de izolație a stringurilor",
-    ],
-    action: [
-      "izolează stringul suspect",
-      "remediază cablul sau conectorul defect înainte de repornire",
-    ],
-    service: [
-      "cheamă service dacă defectul persistă după verificările de izolație",
-    ],
-    ask: [
-      "ai măsurat rezistența de izolație?",
-      "problema apare după ploaie sau umezeală?",
-    ],
+    meaning: "Tensiunea rețelei este sub limita minimă admisă.",
+    checks: ["măsoară tensiunea AC", "verifică conexiunile și cablul AC", "verifică dacă există cădere de tensiune pe cablu"],
+    action: ["confirmă tensiunea rețelei", "verifică traseul și conexiunile AC"],
+    service: ["cheamă service dacă tensiunea este normală dar eroarea persistă"],
+    ask: ["ce tensiune AC ai măsurat?", "cablul AC este dimensionat corect?"],
   },
 
   {
@@ -850,24 +1267,76 @@ export const errorCodes = [
     code: "2003",
     title: "2003 - DC Arc Fault",
     confidence: "ridicat",
-    meaning:
-      "Invertorul detectează arc electric pe partea DC.",
-    checks: [
-      "identifică stringul PV anormal din informațiile de alarmă",
-      "verifică conectorii și cablurile stringului afectat",
-      "inspectează îmbinările și bornele pentru urme de încălzire",
-    ],
-    action: [
-      "oprește partea DC și remediază circuitul afectat",
-      "repornește doar după eliminarea cauzei",
-    ],
-    service: [
-      "cheamă service dacă nu poți identifica rapid stringul afectat",
-    ],
-    ask: [
-      "ce string este indicat în alarmă?",
-      "există urme de încălzire sau conectori slăbiți?",
-    ],
+    meaning: "Invertorul detectează arc electric pe partea DC.",
+    checks: ["identifică stringul PV anormal din informațiile de alarmă", "verifică conectorii și cablurile stringului afectat", "inspectează îmbinările și bornele pentru urme de încălzire"],
+    action: ["oprește partea DC și remediază circuitul afectat", "repornește doar după eliminarea cauzei"],
+    service: ["cheamă service dacă nu poți identifica rapid stringul afectat"],
+    ask: ["ce string este indicat în alarmă?", "există urme de încălzire sau conectori slăbiți?"],
+  },
+
+  {
+    brand: "huawei",
+    model: "",
+    code: "2004",
+    title: "2004 - Grid overfrequency",
+    confidence: "ridicat",
+    meaning: "Frecvența rețelei depășește limita maximă admisă.",
+    checks: ["măsoară frecvența rețelei", "verifică dacă problema este temporară", "verifică dacă mai apar și alte alarme AC"],
+    action: ["așteaptă stabilizarea rețelei", "repornește după stabilizare"],
+    service: ["contactează operatorul de rețea dacă problema persistă"],
+    ask: ["ce frecvență ai măsurat?", "problema apare constant?"],
+  },
+
+  {
+    brand: "huawei",
+    model: "",
+    code: "2005",
+    title: "2005 - Grid underfrequency",
+    confidence: "ridicat",
+    meaning: "Frecvența rețelei este sub limita minimă admisă.",
+    checks: ["măsoară frecvența rețelei", "verifică dacă problema este temporară", "verifică dacă mai apar și alte alarme AC"],
+    action: ["așteaptă stabilizarea rețelei", "repornește după stabilizare"],
+    service: ["contactează operatorul de rețea dacă problema persistă"],
+    ask: ["ce frecvență ai măsurat?", "mai apar și alte erori de rețea?"],
+  },
+
+  {
+    brand: "huawei",
+    model: "",
+    code: "2006",
+    title: "2006 - Grid loss",
+    confidence: "ridicat",
+    meaning: "Invertorul nu detectează rețeaua AC.",
+    checks: ["verifică dacă există tensiune AC la borne", "verifică întrerupătorul și siguranțele AC", "verifică conexiunile AC"],
+    action: ["confirmă prezența rețelei", "verifică protecțiile AC", "repornește după verificare"],
+    service: ["cheamă service dacă rețeaua este prezentă dar eroarea persistă"],
+    ask: ["ai tensiune AC la borne?", "întrerupătorul AC este pornit?"],
+  },
+
+  {
+    brand: "huawei",
+    model: "",
+    code: "2007",
+    title: "2007 - Grid unbalance",
+    confidence: "ridicat",
+    meaning: "Dezechilibru de tensiune între fazele rețelei.",
+    checks: ["măsoară tensiunea pe fiecare fază", "verifică conexiunile trifazate", "verifică dacă problema este pe rețea sau pe cablaj"],
+    action: ["verifică conexiunile trifazate", "discută cu distribuitorul dacă dezechilibrul vine din rețea"],
+    service: ["cheamă service dacă conexiunile sunt corecte dar eroarea persistă"],
+    ask: ["ce tensiuni ai pe fiecare fază?", "problema apare constant?"],
+  },
+
+  {
+    brand: "huawei",
+    model: "",
+    code: "2008",
+    title: "2008 - Grid unstable",
+    confidence: "ridicat",
+    meaning: "Rețeaua AC este instabilă sau fluctuantă.",
+    checks: ["verifică stabilitatea rețelei", "verifică dacă mai apar și alte alarme AC", "verifică conexiunile AC"],
+    action: ["așteaptă stabilizarea rețelei", "repornește după stabilizare"],
+    service: ["contactează operatorul de rețea dacă problema persistă"],
+    ask: ["problema apare în anumite intervale?", "mai apar și alte coduri?"],
   },
 
   {
@@ -876,24 +1345,37 @@ export const errorCodes = [
     code: "2009",
     title: "2009 - String Short-Circuited to Ground",
     confidence: "ridicat",
-    meaning:
-      "Un string PV este în scurt la pământ.",
-    checks: [
-      "verifică ruta indicată de alarmă",
-      "inspectează cablurile și conectorii pentru atingere la masă",
-      "măsoară izolația stringului afectat",
-    ],
-    action: [
-      "izolează stringul cu defect",
-      "remediază traseul sau conectorul înainte de repornire",
-    ],
-    service: [
-      "cheamă service dacă defectul persistă după verificări",
-    ],
-    ask: [
-      "care este stringul indicat de alarmă?",
-      "ai măsurat izolația pe acel string?",
-    ],
+    meaning: "Un string PV este în scurt la pământ.",
+    checks: ["verifică ruta indicată de alarmă", "inspectează cablurile și conectorii pentru atingere la masă", "măsoară izolația stringului afectat"],
+    action: ["izolează stringul cu defect", "remediază traseul sau conectorul înainte de repornire"],
+    service: ["cheamă service dacă defectul persistă după verificări"],
+    ask: ["care este stringul indicat de alarmă?", "ai măsurat izolația pe acel string?"],
+  },
+
+  {
+    brand: "huawei",
+    model: "",
+    code: "2010",
+    title: "2010 - PV overvoltage",
+    confidence: "ridicat",
+    meaning: "Tensiunea DC de intrare depășește limita maximă admisă.",
+    checks: ["măsoară tensiunea stringului DC", "verifică numărul de panouri în serie", "verifică dacă temperatura scăzută a crescut Voc-ul"],
+    action: ["oprește DC dacă tensiunea depășește limita", "corectează dimensionarea stringului dacă e cazul"],
+    service: ["cheamă service dacă valorile sunt normale dar eroarea persistă"],
+    ask: ["ce tensiune DC ai măsurat?", "câte panouri sunt în serie?"],
+  },
+
+  {
+    brand: "huawei",
+    model: "",
+    code: "2011",
+    title: "2011 - PV undervoltage",
+    confidence: "ridicat",
+    meaning: "Tensiunea DC de intrare este sub pragul minim de pornire.",
+    checks: ["verifică tensiunea stringurilor", "verifică dacă panourile sunt umbrite", "verifică conexiunile DC"],
+    action: ["verifică panourile și conexiunile DC", "așteaptă condiții mai bune de lumină"],
+    service: ["cheamă service dacă tensiunea este normală dar eroarea persistă"],
+    ask: ["există umbrire pe panouri?", "ce tensiune DC ai măsurat?"],
   },
 
   {
@@ -902,24 +1384,102 @@ export const errorCodes = [
     code: "2012",
     title: "2012 - String Current Backfeed",
     confidence: "ridicat",
-    meaning:
-      "Invertorul detectează curent de backfeed într-un string.",
-    checks: [
-      "verifică polaritatea și conexiunile stringurilor",
-      "verifică dacă există stringuri conectate incorect",
-      "verifică dacă alarma indică un string anume",
-    ],
-    action: [
-      "corectează conexiunile stringului afectat",
-      "repornește doar după verificarea polarității și conexiunilor",
-    ],
-    service: [
-      "cheamă service dacă alarma persistă după verificări",
-    ],
-    ask: [
-      "ce string este indicat în alarmă?",
-      "ai verificat polaritatea și conexiunile?",
-    ],
+    meaning: "Invertorul detectează curent de backfeed într-un string.",
+    checks: ["verifică polaritatea și conexiunile stringurilor", "verifică dacă există stringuri conectate incorect", "verifică dacă alarma indică un string anume"],
+    action: ["corectează conexiunile stringului afectat", "repornește doar după verificarea polarității și conexiunilor"],
+    service: ["cheamă service dacă alarma persistă după verificări"],
+    ask: ["ce string este indicat în alarmă?", "ai verificat polaritatea și conexiunile?"],
+  },
+
+  {
+    brand: "huawei",
+    model: "",
+    code: "2013",
+    title: "2013 - PV string lost",
+    confidence: "ridicat",
+    meaning: "Un string PV nu mai este detectat de invertor.",
+    checks: ["verifică tensiunea stringului afectat", "verifică conectorii și cablurile stringului", "verifică dacă există circuit deschis"],
+    action: ["identifică stringul pierdut", "verifică conexiunile și starea panourilor"],
+    service: ["cheamă service dacă stringul pare normal dar eroarea persistă"],
+    ask: ["ce string este indicat în alarmă?", "ce tensiune ai pe acel string?"],
+  },
+
+  {
+    brand: "huawei",
+    model: "",
+    code: "2031",
+    title: "2031 - Phase wire short-circuited to PE",
+    confidence: "ridicat",
+    meaning: "Conductorul de fază este în scurt la PE sau impedanța către PE este prea mică.",
+    checks: ["verifică dacă există scurt sau impedanță mică între fază și PE", "verifică cablul AC și bornele", "verifică dacă a fost modificată recent instalația AC"],
+    action: ["remediază defectul pe partea AC înainte de repornire", "repornește doar după verificarea izolării și conexiunilor"],
+    service: ["cheamă service dacă alarma persistă după verificarea cablajului AC"],
+    ask: ["ai verificat cablul de fază către PE?", "au fost lucrări recente pe partea AC?"],
+  },
+
+  {
+    brand: "huawei",
+    model: "",
+    code: "2032",
+    title: "2032 - Grid Failed",
+    confidence: "ridicat",
+    meaning: "Invertorul detectează problemă pe rețeaua AC.",
+    checks: ["verifică dacă tensiunea AC este normală", "verifică dacă circuitul AC este întrerupt sau întrerupătorul AC este OFF", "verifică bornele și conexiunile AC"],
+    action: ["confirmă rețeaua și conexiunile AC înainte de repornire", "repornește doar după stabilizarea rețelei"],
+    service: ["cheamă service dacă tensiunea AC este normală dar alarma persistă"],
+    ask: ["ce tensiune AC ai măsurat?", "întrerupătorul AC este pornit?"],
+  },
+
+  {
+    brand: "huawei",
+    model: "",
+    code: "2051",
+    title: "2051 - Abnormal Residual Current",
+    confidence: "ridicat",
+    meaning: "Invertorul detectează curent rezidual anormal.",
+    checks: ["verifică dacă există alarmă de scurt la pământ pe string, izolație mică sau fault la pământ", "verifică cablurile și conectorii pentru umezeală sau deteriorări", "verifică împământarea și starea traseelor PV"],
+    action: ["elimină cauza externă, apoi repornește", "dacă apare ocazional, urmărește dacă sistemul își revine după remedierea cauzei"],
+    service: ["cheamă service dacă alarma apare frecvent sau persistă"],
+    ask: ["mai apar și alarme de izolație sau scurt la pământ?", "problema apare pe timp umed?"],
+  },
+
+  {
+    brand: "huawei",
+    model: "",
+    code: "2052",
+    title: "2052 - Residual current too high",
+    confidence: "ridicat",
+    meaning: "Curentul rezidual depășește limita admisă.",
+    checks: ["verifică izolația cablurilor PV", "verifică împământarea sistemului", "inspectează conectorii și traseele DC"],
+    action: ["izolează circuitul afectat", "remediază cauza curentului rezidual", "repornește după remediere"],
+    service: ["cheamă service dacă alarma persistă"],
+    ask: ["problema apare pe umezeală?", "mai apar și alte coduri?"],
+  },
+
+  {
+    brand: "huawei",
+    model: "",
+    code: "2062",
+    title: "2062 - Low Insulation Resistance",
+    confidence: "ridicat",
+    meaning: "Rezistența de izolație pe partea PV este prea mică.",
+    checks: ["verifică dacă există scurt între PV și pământ", "verifică dacă mediul este umed și a scăzut izolația", "măsoară rezistența de izolație a stringurilor"],
+    action: ["izolează stringul suspect", "remediază cablul sau conectorul defect înainte de repornire"],
+    service: ["cheamă service dacă defectul persistă după verificările de izolație"],
+    ask: ["ai măsurat rezistența de izolație?", "problema apare după ploaie sau umezeală?"],
+  },
+
+  {
+    brand: "huawei",
+    model: "",
+    code: "2063",
+    title: "2063 - PV string abnormal",
+    confidence: "mediu",
+    meaning: "String PV cu comportament anormal detectat.",
+    checks: ["verifică tensiunea stringului indicat", "verifică dacă există panouri defecte sau umbrite", "verifică conectorii și cablurile stringului"],
+    action: ["identifică stringul cu probleme", "verifică conexiunile și starea panourilor"],
+    service: ["cheamă service dacă stringul pare normal dar eroarea persistă"],
+    ask: ["ce string este indicat în alarmă?", "există panouri umbrite sau defecte?"],
   },
 
   {
@@ -928,24 +1488,24 @@ export const errorCodes = [
     code: "2064",
     title: "2064 - Device Abnormal",
     confidence: "mediu",
-    meaning:
-      "Invertorul raportează defect intern sau condiție anormală a dispozitivului.",
-    checks: [
-      "verifică dacă mai apar și alte alarme asociate",
-      "repornește invertorul și urmărește dacă alarma reapare",
-      "verifică condițiile de funcționare și alimentarea",
-    ],
-    action: [
-      "efectuează o repornire controlată",
-      "dacă alarma persistă, notează cauza ID și contextul",
-    ],
-    service: [
-      "cheamă service dacă alarma revine imediat sau este însoțită de alte defecte majore",
-    ],
-    ask: [
-      "care este cause ID din alarmă?",
-      "mai apar și alte coduri simultan?",
-    ],
+    meaning: "Invertorul raportează defect intern sau condiție anormală a dispozitivului.",
+    checks: ["verifică dacă mai apar și alte alarme asociate", "repornește invertorul și urmărește dacă alarma reapare", "verifică condițiile de funcționare și alimentarea"],
+    action: ["efectuează o repornire controlată", "dacă alarma persistă, notează cauza ID și contextul"],
+    service: ["cheamă service dacă alarma revine imediat sau este însoțită de alte defecte majore"],
+    ask: ["care este cause ID din alarmă?", "mai apar și alte coduri simultan?"],
+  },
+
+  {
+    brand: "huawei",
+    model: "",
+    code: "2065",
+    title: "2065 - Over temperature",
+    confidence: "ridicat",
+    meaning: "Temperatura internă a invertorului a depășit limita admisă.",
+    checks: ["verifică ventilarea spațiului de montaj", "verifică dacă ventilatoarele funcționează", "verifică depunerile de praf pe radiator"],
+    action: ["îmbunătățește ventilarea", "curăță radiatorul și ventilatoarele", "lasă invertorul să se răcească"],
+    service: ["cheamă service dacă ventilatoarele nu funcționează sau eroarea persistă la temperaturi normale"],
+    ask: ["invertorul este montat în soare direct?", "ventilatoarele pornesc?"],
   },
 
   {
@@ -954,24 +1514,11 @@ export const errorCodes = [
     code: "2080",
     title: "2080 - Abnormal PV Module Configuration",
     confidence: "mediu",
-    meaning:
-      "Configurația stringului PV este anormală sau necorespunzătoare.",
-    checks: [
-      "verifică dacă tensiunea stringului este aproximativ 0",
-      "verifică dacă există circuit deschis în string",
-      "verifică dacă numărul de module și conexiunile corespund proiectării",
-    ],
-    action: [
-      "remediază stringul deschis sau configurația greșită",
-      "repornește după verificarea tensiunilor și conexiunilor",
-    ],
-    service: [
-      "cheamă service dacă nu poți identifica stringul/configurația afectată",
-    ],
-    ask: [
-      "ce tensiune ai pe stringul afectat?",
-      "există vreun string cu tensiune aproape 0?",
-    ],
+    meaning: "Configurația stringului PV este anormală sau necorespunzătoare.",
+    checks: ["verifică dacă tensiunea stringului este aproximativ 0", "verifică dacă există circuit deschis în string", "verifică dacă numărul de module și conexiunile corespund proiectării"],
+    action: ["remediază stringul deschis sau configurația greșită", "repornește după verificarea tensiunilor și conexiunilor"],
+    service: ["cheamă service dacă nu poți identifica stringul/configurația afectată"],
+    ask: ["ce tensiune ai pe stringul afectat?", "există vreun string cu tensiune aproape 0?"],
   },
 
   // ===== GENERAL =====
@@ -982,22 +1529,11 @@ export const errorCodes = [
     code: "utility loss",
     title: "Utility Loss / pierdere rețea",
     confidence: "mediu",
-    meaning:
-      "Invertorul nu detectează rețeaua sau conexiunea AC este întreruptă.",
-    checks: [
-      "verifică dacă există tensiune AC la borne",
-      "verifică întrerupătorul AC și siguranțele",
-      "verifică dacă rețeaua este disponibilă",
-    ],
-    action: [
-      "confirmă rețeaua și conexiunile AC",
-      "repornește invertorul doar după confirmarea alimentării",
-    ],
+    meaning: "Invertorul nu detectează rețeaua sau conexiunea AC este întreruptă.",
+    checks: ["verifică dacă există tensiune AC la borne", "verifică întrerupătorul AC și siguranțele", "verifică dacă rețeaua este disponibilă"],
+    action: ["confirmă rețeaua și conexiunile AC", "repornește invertorul doar după confirmarea alimentării"],
     service: ["cheamă service dacă rețeaua este prezentă dar alarma persistă"],
-    ask: [
-      "ce tensiune AC ai măsurat?",
-      "este oprit întrerupătorul AC?",
-    ],
+    ask: ["ce tensiune AC ai măsurat?", "este oprit întrerupătorul AC?"],
   },
 
   {
@@ -1007,15 +1543,8 @@ export const errorCodes = [
     title: "Supratensiune rețea",
     confidence: "mediu",
     meaning: "Tensiune AC prea mare.",
-    checks: [
-      "măsoară tensiunea AC",
-      "verifică secțiunea cablului AC",
-      "verifică dacă problema apare la prânz",
-    ],
-    action: [
-      "verifică rețeaua și conexiunile AC",
-      "confirmă dacă problema este locală sau de distribuție",
-    ],
+    checks: ["măsoară tensiunea AC", "verifică secțiunea cablului AC", "verifică dacă problema apare la prânz"],
+    action: ["verifică rețeaua și conexiunile AC", "confirmă dacă problema este locală sau de distribuție"],
     service: ["contactează distribuitorul dacă tensiunea depășește limitele"],
     ask: ["ce tensiune ai?"],
   },
@@ -1027,20 +1556,10 @@ export const errorCodes = [
     title: "Frecvență rețea prea mică",
     confidence: "mediu",
     meaning: "Frecvența rețelei este sub pragul permis.",
-    checks: [
-      "măsoară frecvența rețelei",
-      "verifică dacă problema este temporară sau repetitivă",
-      "verifică dacă mai apar și alte alarme de rețea",
-    ],
-    action: [
-      "așteaptă stabilizarea rețelei dacă evenimentul e temporar",
-      "verifică parametrii rețelei înainte de repornire",
-    ],
+    checks: ["măsoară frecvența rețelei", "verifică dacă problema este temporară sau repetitivă", "verifică dacă mai apar și alte alarme de rețea"],
+    action: ["așteaptă stabilizarea rețelei dacă evenimentul e temporar", "verifică parametrii rețelei înainte de repornire"],
     service: ["contactează operatorul de rețea dacă problema persistă"],
-    ask: [
-      "ce frecvență ai măsurat?",
-      "mai apar și alte probleme AC?",
-    ],
+    ask: ["ce frecvență ai măsurat?", "mai apar și alte probleme AC?"],
   },
 
   {
@@ -1050,15 +1569,8 @@ export const errorCodes = [
     title: "Supratemperatură",
     confidence: "mediu",
     meaning: "Invertorul este prea fierbinte.",
-    checks: [
-      "verifică ventilarea",
-      "verifică ventilatoarele",
-      "verifică dacă este montat în soare direct",
-    ],
-    action: [
-      "răcește invertorul",
-      "îmbunătățește ventilația",
-    ],
+    checks: ["verifică ventilarea", "verifică ventilatoarele", "verifică dacă este montat în soare direct"],
+    action: ["răcește invertorul", "îmbunătățește ventilația"],
     service: ["cheamă service dacă persistă"],
     ask: ["unde este montat?"],
   },
@@ -1070,15 +1582,8 @@ export const errorCodes = [
     title: "Lipsă rețea",
     confidence: "mediu",
     meaning: "Nu există rețea AC sau invertorul nu o detectează.",
-    checks: [
-      "verifică tensiunea AC",
-      "verifică siguranțele și întrerupătoarele",
-      "verifică conexiunile AC",
-    ],
-    action: [
-      "verifică protecțiile AC",
-      "confirmă prezența rețelei înainte de repornire",
-    ],
+    checks: ["verifică tensiunea AC", "verifică siguranțele și întrerupătoarele", "verifică conexiunile AC"],
+    action: ["verifică protecțiile AC", "confirmă prezența rețelei înainte de repornire"],
     service: ["cheamă service dacă persistă"],
     ask: ["ai tensiune AC?"],
   },
@@ -1089,22 +1594,11 @@ export const errorCodes = [
     code: "earth fault",
     title: "Earth Fault / fault la pământ",
     confidence: "mediu",
-    meaning:
-      "Invertorul detectează problemă de împământare sau scurgere la pământ.",
-    checks: [
-      "verifică împământarea AC",
-      "inspectează cablurile și conectorii pentru atingere la masă",
-      "verifică dacă problema apare pe umezeală",
-    ],
-    action: [
-      "corectează împământarea și conexiunile",
-      "izolează circuitul suspect înainte de repornire",
-    ],
+    meaning: "Invertorul detectează problemă de împământare sau scurgere la pământ.",
+    checks: ["verifică împământarea AC", "inspectează cablurile și conectorii pentru atingere la masă", "verifică dacă problema apare pe umezeală"],
+    action: ["corectează împământarea și conexiunile", "izolează circuitul suspect înainte de repornire"],
     service: ["cheamă service dacă alarma persistă după verificări"],
-    ask: [
-      "partea AC este corect împământată?",
-      "ai observat umezeală sau conectori deteriorați?",
-    ],
+    ask: ["partea AC este corect împământată?", "ai observat umezeală sau conectori deteriorați?"],
   },
 
   {
@@ -1113,22 +1607,11 @@ export const errorCodes = [
     code: "insulation fault",
     title: "Insulation fault",
     confidence: "mediu",
-    meaning:
-      "Defect de izolație între stringurile PV și pământ sau trasee DC.",
-    checks: [
-      "măsoară rezistența de izolație a stringurilor",
-      "inspectează conectorii și cablurile pentru umezeală sau deteriorări",
-      "izolează pe rând stringurile pentru identificare",
-    ],
-    action: [
-      "remediază stringul sau traseul defect înainte de repornire",
-      "repornește numai după verificări de izolație",
-    ],
+    meaning: "Defect de izolație între stringurile PV și pământ sau trasee DC.",
+    checks: ["măsoară rezistența de izolație a stringurilor", "inspectează conectorii și cablurile pentru umezeală sau deteriorări", "izolează pe rând stringurile pentru identificare"],
+    action: ["remediază stringul sau traseul defect înainte de repornire", "repornește numai după verificări de izolație"],
     service: ["cheamă service dacă defectul persistă"],
-    ask: [
-      "ai măsurat izolația?",
-      "problema apare pe timp umed?",
-    ],
+    ask: ["ai măsurat izolația?", "problema apare pe timp umed?"],
   },
 
   {
@@ -1138,14 +1621,8 @@ export const errorCodes = [
     title: "DC Injection High",
     confidence: "mediu",
     meaning: "Invertorul detectează injecție DC anormală pe partea AC.",
-    checks: [
-      "verifică partea AC",
-      "verifică dacă mai apar alte alarme asociate",
-    ],
-    action: [
-      "repornește după verificarea conexiunilor AC",
-      "monitorizează dacă eroarea reapare",
-    ],
+    checks: ["verifică partea AC", "verifică dacă mai apar alte alarme asociate"],
+    action: ["repornește după verificarea conexiunilor AC", "monitorizează dacă eroarea reapare"],
     service: ["cheamă service dacă persistă"],
     ask: ["mai apar și alte coduri?"],
   },
