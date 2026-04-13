@@ -37,6 +37,7 @@ type EffectiveProfile = RawProfile & {
 };
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+const IBAN = "RO44 REVO 0000 1558 9943 9674";
 
 function getRolePolicy(role: RawProfile["role"]) {
   switch (role) {
@@ -93,6 +94,180 @@ function applyRolePolicy(profile: RawProfile): EffectiveProfile {
   };
 }
 
+// 🔧 MODAL PENTRU UPGRADE CU IBAN
+function UpgradeModal({ plan, onClose }: { plan: "pro" | "installer"; onClose: () => void }) {
+  const [copied, setCopied] = useState(false);
+  const isPro = plan === "pro";
+  const planName = isPro ? "PRO" : "INSTALLER";
+  const price = isPro ? "5€/lună" : "20€/lună";
+  const features = isPro
+    ? ["100 analize text/lună", "20 analize poze/lună", "Acces AI complet", "Diagnoză rapidă"]
+    : ["400 analize text/lună", "100 analize poze/lună", "Acces AI complet", "Volum profesional"];
+
+  const copyIBAN = () => {
+    navigator.clipboard.writeText(IBAN);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: "rgba(0,0,0,0.6)",
+        zIndex: 1000,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 16,
+      }}
+      onClick={onClose}
+    >
+      <div
+        style={{
+          background: "#fff",
+          borderRadius: 24,
+          padding: 24,
+          width: "100%",
+          maxWidth: 420,
+          boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: 16,
+          }}
+        >
+          <h2 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: "#0f172a" }}>
+            Activează {planName}
+          </h2>
+          <button
+            onClick={onClose}
+            style={{
+              background: "#f1f5f9",
+              border: "none",
+              borderRadius: 8,
+              width: 32,
+              height: 32,
+              cursor: "pointer",
+              fontSize: 16,
+              fontWeight: 700,
+              color: "#64748b",
+            }}
+          >
+            ✕
+          </button>
+        </div>
+        <div
+          style={{
+            background: isPro
+              ? "linear-gradient(135deg,#1d4ed8,#3b82f6)"
+              : "linear-gradient(135deg,#059669,#10b981)",
+            color: "white",
+            borderRadius: 12,
+            padding: "10px 16px",
+            fontSize: 22,
+            fontWeight: 800,
+            textAlign: "center",
+            marginBottom: 16,
+          }}
+        >
+          {price}
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
+          {features.map((f, i) => (
+            <div key={i} style={{ fontSize: 15, color: "#334155", fontWeight: 600 }}>
+              ✓ {f}
+            </div>
+          ))}
+        </div>
+        <div style={{ height: 1, background: "#e2e8f0", margin: "16px 0" }} />
+        <p style={{ fontSize: 14, color: "#475569", lineHeight: 1.6, margin: "0 0 16px" }}>
+          Trimite plata prin transfer bancar la IBAN-ul de mai jos.{" "}
+          <b>Menționează emailul tău</b> în descrierea plății. Contul va fi activat în maxim 24 ore
+          lucrătoare.
+        </p>
+        <div
+          style={{
+            background: "#f8fafc",
+            border: "1.5px solid #e2e8f0",
+            borderRadius: 14,
+            padding: "12px 14px",
+            marginBottom: 12,
+            display: "flex",
+            flexDirection: "column",
+            gap: 6,
+          }}
+        >
+          <span
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              color: "#94a3b8",
+              textTransform: "uppercase",
+            }}
+          >
+            IBAN (RON / EUR) · Revolut
+          </span>
+          <span
+            style={{
+              fontSize: 15,
+              fontWeight: 800,
+              color: "#0f172a",
+              letterSpacing: 0.5,
+            }}
+          >
+            {IBAN}
+          </span>
+          <button
+            onClick={copyIBAN}
+            style={{
+              background: isPro ? "#1d4ed8" : "#059669",
+              color: "white",
+              border: "none",
+              borderRadius: 8,
+              padding: "8px 14px",
+              fontSize: 13,
+              fontWeight: 700,
+              cursor: "pointer",
+              alignSelf: "flex-start",
+            }}
+          >
+            {copied ? "✓ Copiat!" : "Copiază IBAN"}
+          </button>
+        </div>
+        <p style={{ fontSize: 13, color: "#64748b", margin: "0 0 16px" }}>
+          💡 După confirmarea plății, contul va fi activat în maxim 24h.
+        </p>
+        <button
+          onClick={onClose}
+          style={{
+            width: "100%",
+            background: isPro ? "#1d4ed8" : "#059669",
+            color: "white",
+            border: "none",
+            borderRadius: 14,
+            padding: "14px 16px",
+            fontSize: 16,
+            fontWeight: 800,
+            cursor: "pointer",
+          }}
+        >
+          Am efectuat plata
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   const supabase = useMemo(() => {
     return createClient(
@@ -111,12 +286,14 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<HistoryItem[]>([]);
 
-  // Stare pentru analiza poză
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageLoading, setImageLoading] = useState(false);
   const [imageResult, setImageResult] = useState("");
   const [activeTab, setActiveTab] = useState<"text" | "image">("text");
+
+  // 🔧 STARE PENTRU MODAL
+  const [upgradeModal, setUpgradeModal] = useState<"pro" | "installer" | null>(null);
 
   const remainingTextAnalyses =
     profile && !profile.unlimitedText
@@ -432,7 +609,10 @@ export default function Home() {
 
   return (
     <>
-      {/* Meta viewport — critică pentru mobil */}
+      {upgradeModal && (
+        <UpgradeModal plan={upgradeModal} onClose={() => setUpgradeModal(null)} />
+      )}
+
       <style>{`
         * { box-sizing: border-box; }
         body { margin: 0; padding: 0; }
@@ -446,7 +626,6 @@ export default function Home() {
       <main style={styles.page}>
         <div style={styles.phoneShell}>
 
-          {/* HEADER */}
           <header style={styles.headerCard}>
             <div style={styles.logoCircle}>⚡</div>
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -463,7 +642,6 @@ export default function Home() {
             </button>
           </header>
 
-          {/* STATUS PLAN */}
           <section style={styles.freeCard}>
             <div style={styles.freeTop}>
               <span style={styles.freeBadge}>
@@ -482,7 +660,6 @@ export default function Home() {
             </p>
           </section>
 
-          {/* INFO CONT */}
           <section style={styles.proCard}>
             <div style={styles.proTop}>
               <div>
@@ -520,7 +697,7 @@ export default function Home() {
                 </p>
                 <button
                   style={styles.upgradeButton}
-                  onClick={() => alert("Contact: solardiagpro@gmail.com pentru activare PRO")}
+                  onClick={() => setUpgradeModal("pro")}
                 >
                   Activează PRO — de la 5€/lună
                 </button>
@@ -528,7 +705,6 @@ export default function Home() {
             )}
           </section>
 
-          {/* TABS: TEXT / POZĂ */}
           <div style={styles.tabBar}>
             <button
               className="tab-btn"
@@ -549,7 +725,7 @@ export default function Home() {
               }}
               onClick={() => {
                 if (!canUseImage) {
-                  alert("Analiza după poză este disponibilă în planul PRO sau INSTALLER.");
+                  setUpgradeModal("pro");
                   return;
                 }
                 setActiveTab("image");
@@ -559,7 +735,6 @@ export default function Home() {
             </button>
           </div>
 
-          {/* PANOUL TEXT */}
           {activeTab === "text" && (
             <section style={styles.card}>
               <div style={styles.sectionTop}>
@@ -594,7 +769,6 @@ export default function Home() {
             </section>
           )}
 
-          {/* PANOUL POZĂ */}
           {activeTab === "image" && canUseImage && (
             <section style={styles.card}>
               <div style={styles.sectionTop}>
@@ -606,7 +780,6 @@ export default function Home() {
                 Fotografiază ecranul invertorului sau etichetele de eroare.
               </p>
 
-              {/* Upload / Camera */}
               <label style={styles.uploadLabel}>
                 <input
                   type="file"
@@ -653,7 +826,6 @@ export default function Home() {
             </section>
           )}
 
-          {/* ISTORIC */}
           <section style={styles.card}>
             <div style={styles.sectionTop}>
               <h2 style={styles.sectionTitle}>Istoric</h2>
