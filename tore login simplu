@@ -1,0 +1,10 @@
+[33mea41665[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m fix: corectare buclă infinită login și cod complet
+[33mcd1dab2[m flux IBAN upgrade PRO INSTALLER
+[33m3799fb3[m extindere baza erori
+[33m4689f7f[m trigger deploy
+[33m931ef15[m Revert "fix login prerender final"
+[33m8066c01[m Revert "restore login utf8"
+[33mcb6c1de[m restore login utf8
+[33mda27e28[m fix login prerender final
+[33mb4f62c6[m force redeploy
+[33m03ce360[m fix login dynamic
