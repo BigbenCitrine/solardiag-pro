@@ -691,18 +691,27 @@ export default function Home() {
             </div>
 
             {profile.role === "free" && (
-              <div style={styles.upgradeBox}>
-                <p style={{ margin: "0 0 10px", fontSize: 14, color: "#fff" }}>
-                  🚀 Treci la PRO pentru analiză AI + poze + mai multe analize
-                </p>
-                <button
-                  style={styles.upgradeButton}
-                  onClick={() => setUpgradeModal("pro")}
-                >
-                  Activează PRO — de la 5€/lună
-                </button>
-              </div>
-            )}
+  <div style={styles.upgradeBox}>
+    <p style={{ margin: "0 0 10px", fontSize: 14, color: "#fff" }}>
+      🚀 Alege planul potrivit pentru tine:
+    </p>
+    <div style={{ display: "flex", gap: 10, flexDirection: "column" }}>
+      <button
+        style={{ ...styles.upgradeButton, background: "#3b82f6", color: "white" }}
+        onClick={() => setUpgradeModal("pro")}
+      >
+        ⚡ Activează PRO — 5€/lună
+      </button>
+      <button
+        style={{ ...styles.upgradeButton, background: "#10b981", color: "white" }}
+        onClick={() => setUpgradeModal("installer")}
+      >
+        🔧 Activează INSTALLER — 20€/lună
+      </button>
+    </div>
+  </div>
+)}
+
           </section>
 
           <div style={styles.tabBar}>
