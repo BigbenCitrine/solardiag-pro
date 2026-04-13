@@ -1,352 +1,176 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import OpenAI from "openai";
-import { errorCodes } from "@/data/error-codes";
 
-type DbProfile = {
-  uuid: string;
-  email: string;
-  role: "master" | "admin" | "installer" | "pro" | "free" | "trusted";
-  status: "active" | "suspended" | "banned";
-  can_use_image: boolean;
-  monthly_text_limit: number;
-  monthly_image_limit: number;
-  text_used_this_month: number;
-  image_used_this_month: number;
-  monthly_spend_cap: number | string;
-  estimated_spend_this_month: number | string;
-  billing_period_reset_at: string;
-};
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY!,
+});
 
-type ErrorCodeItem = {
-  brand: string;
-  model: string;
-  code: string;
-  title: string;
-  confidence: string;
-  meaning: string;
-  checks: string[];
-  action: string[];
-  service: string[];
-  ask: string[];
-};
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
-const MONTH_MS = 30 * 24 * 60 * 60 * 1000;
-const ESTIMATED_TEXT_AI_COST = 0.01;
-
-function normalizeText(value: string) {
-  return value
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .trim();
-}
-
-function formatLocalResult(item: ErrorCodeItem) {
-  return [
-    `${item.title}`,
-    "",
-    `Încredere: ${item.confidence}`,
-    "",
-    `Semnificație: ${item.meaning}`,
-    "",
-    `Verificări:`,
-    ...item.checks.map((x) => `- ${x}`),
-    "",
-    `Acțiuni recomandate:`,
-    ...item.action.map((x) => `- ${x}`),
-    "",
-    `Când chemi service:`,
-    ...item.service.map((x) => `- ${x}`),
-    "",
-    `Întrebări utile:`,
-    ...item.ask.map((x) => `- ${x}`),
-  ].join("\n");
-}
-
-function findLocalError(input: string): ErrorCodeItem | null {
-  const q = normalizeText(input);
-
-  for (const item of errorCodes as ErrorCodeItem[]) {
-    const brand = normalizeText(item.brand || "");
-    const code = normalizeText(item.code || "");
-    const title = normalizeText(item.title || "");
-
-    if (brand && code && q.includes(brand) && q.includes(code)) {
-      return item;
-    }
-
-    if (brand && title && q.includes(brand) && q.includes(title)) {
-      return item;
-    }
-  }
-
-  for (const item of errorCodes as ErrorCodeItem[]) {
-    const code = normalizeText(item.code || "");
-    const title = normalizeText(item.title || "");
-
-    if (code && q === code) return item;
-    if (title && q === title) return item;
-    if (code && q.includes(code) && item.brand === "general") return item;
-    if (title && q.includes(title)) return item;
-  }
-
-  for (const item of errorCodes as ErrorCodeItem[]) {
-    const brand = normalizeText(item.brand || "");
-    const title = normalizeText(item.title || "");
-
-    if (!title) continue;
-
-    const titleWords = title.split(/\s+/).filter((w) => w.length >= 4);
-    const hits = titleWords.filter((w) => q.includes(w)).length;
-
-    if ((brand && q.includes(brand) && hits >= 1) || hits >= 2) {
-      return item;
-    }
-  }
-
-  return null;
-}
-
-function createSupabaseClientWithUserToken(token: string) {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      global: {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-      },
-    }
-  );
-}
-
-async function resetMonthlyUsageIfNeeded(
-  supabase: ReturnType<typeof createSupabaseClientWithUserToken>,
-  profile: DbProfile
-): Promise<DbProfile> {
-  const resetAt = profile.billing_period_reset_at
-    ? new Date(profile.billing_period_reset_at).getTime()
-    : 0;
-
-  const now = Date.now();
-
-  if (!resetAt || now - resetAt > MONTH_MS) {
-    const newReset = new Date().toISOString();
-
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        text_used_this_month: 0,
-        image_used_this_month: 0,
-        estimated_spend_this_month: 0,
-        billing_period_reset_at: newReset,
-      })
-      .eq("uuid", profile.uuid);
-
-    if (!error) {
-      return {
-        ...profile,
-        text_used_this_month: 0,
-        image_used_this_month: 0,
-        estimated_spend_this_month: 0,
-        billing_period_reset_at: newReset,
-      };
-    }
-  }
-
-  return profile;
-}
-
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    if (process.env.APP_ENABLED === "false") {
-      return NextResponse.json({
-        result: "Aplicația este dezactivată.",
-      });
-    }
-
+    // Verifică autentificarea
     const authHeader = req.headers.get("authorization");
-    const token = authHeader?.startsWith("Bearer ")
-      ? authHeader.slice(7)
-      : null;
-
-    if (!token) {
-      return NextResponse.json({ error: "Token lipsă" }, { status: 401 });
+    if (!authHeader) {
+      return NextResponse.json({ error: "Neautorizat" }, { status: 401 });
     }
 
-    const supabase = createSupabaseClientWithUserToken(token);
-
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
+    const token = authHeader.replace("Bearer ", "");
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
 
     if (userError || !user) {
-      return NextResponse.json(
-        { error: "Not authenticated" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Sesiune invalidă" }, { status: 401 });
     }
 
-    const { data: rawProfile, error: profileError } = await supabase
+    const { text } = await req.json();
+    if (!text) {
+      return NextResponse.json({ error: "Text lipsă" }, { status: 400 });
+    }
+
+    // Verifică profilul utilizatorului
+    const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("*")
       .eq("uuid", user.id)
       .single();
 
-    if (profileError || !rawProfile) {
-      return NextResponse.json(
-        {
-          error: `No profile found pentru userul ${user.email || user.id}`,
-        },
-        { status: 404 }
-      );
+    if (profileError || !profile) {
+      return NextResponse.json({ error: "Profil negăsit" }, { status: 403 });
     }
 
-    let profile = (await resetMonthlyUsageIfNeeded(
-      supabase,
-      rawProfile as DbProfile
-    )) as DbProfile;
-
+    // Verifică statusul contului
     if (profile.status !== "active") {
-      return NextResponse.json(
-        { result: "Contul tău nu este activ." },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "Cont suspendat sau inactiv" }, { status: 403 });
     }
 
-    const body = await req.json();
-    const input = String(body?.text || "").trim();
+    const isFree = profile.role === "free";
+    const isProOrAbove = ["pro", "installer", "trusted", "admin", "master"].includes(profile.role);
 
-    if (!input) {
-      return NextResponse.json(
-        { result: "Introdu un cod de eroare sau o descriere." },
-        { status: 400 }
-      );
-    }
+    let finalResult = "";
 
-    const localMatch = findLocalError(input);
-    if (localMatch) {
-      return NextResponse.json({
-        result: formatLocalResult(localMatch),
-        source: "database",
-      });
-    }
+    // 🔍 PASUL 1: Caută în baza de date locală (PENTRU TOȚI UTILIZATORII)
+    const { data: errorDb, error: dbError } = await supabase
+      .from("error_codes")
+      .select("*")
+      .or(`code.ilike.%${text}%,description.ilike.%${text}%,brand.ilike.%${text}%`)
+      .limit(3);
 
-    if (profile.role === "free") {
-      return NextResponse.json({
-        result: "Disponibil în PRO",
-        source: "plan-gate",
-      });
-    }
-
-    const aiAllowedRoles = ["master", "admin", "installer", "pro", "trusted"];
-    if (!aiAllowedRoles.includes(profile.role)) {
-      return NextResponse.json(
-        { result: "Rol invalid pentru analiză AI." },
-        { status: 403 }
-      );
-    }
-
-    const isUnlimitedRole =
-      profile.role === "master" || profile.role === "admin";
-
-    if (!isUnlimitedRole) {
-      if (profile.text_used_this_month >= profile.monthly_text_limit) {
-        return NextResponse.json({
-          result: "Ai atins limita lunară de utilizare.",
-          source: "plan-limit",
-        });
-      }
-
-      if (
-        Number(profile.estimated_spend_this_month) >=
-        Number(profile.monthly_spend_cap)
-      ) {
-        return NextResponse.json({
-          result: "Ai atins limita de consum.",
-          source: "spend-limit",
-        });
+    if (errorDb && errorDb.length > 0) {
+      // Am găsit în baza de date
+      const errors = errorDb.map((e: any) => 
+        `📋 ${e.brand ? `[${e.brand}] ` : ""}${e.code}: ${e.description}\n   🔧 Soluție: ${e.solution || "Contactează suportul tehnic."}`
+      ).join("\n\n");
+      
+      finalResult = errors;
+      
+      // Pentru utilizatorii FREE, ne oprim aici
+      if (isFree) {
+        // Incrementează contorul pentru FREE
+        await supabase
+          .from("profiles")
+          .update({
+            text_used_this_week: profile.text_used_this_week + 1,
+            text_used_this_month: profile.text_used_this_month + 1
+          })
+          .eq("uuid", user.id);
+          
+        return NextResponse.json({ result: finalResult });
       }
     }
 
-    if (!process.env.OPENAI_API_KEY) {
-      return NextResponse.json({
-        result:
-          "OPENAI_API_KEY lipsește din .env.local. Pentru FREE trebuie să vezi «Disponibil în PRO». Pentru rolurile plătite, AI nu poate răspunde până nu pui cheia.",
-        source: "missing-openai-key",
-      });
-    }
+    // 🔥 PASUL 2: Pentru PRO/INSTALLER - dacă nu s-a găsit în DB sau vrem analiză AI suplimentară
+    if (isProOrAbove) {
+      // Verifică limitele lunare
+      const monthlyLimit = profile.monthly_text_limit || 100;
+      const usedThisMonth = profile.text_used_this_month || 0;
+      
+      if (usedThisMonth >= monthlyLimit) {
+        return NextResponse.json({ 
+          error: `Ai atins limita lunară de ${monthlyLimit} analize text. Upgrade pentru mai multe.` 
+        }, { status: 429 });
+      }
 
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
+      // Dacă nu am găsit nimic în DB sau vrem analiză AI
+      if (!errorDb || errorDb.length === 0) {
+        // Apelează OpenAI cu prompt specializat pentru TOATE mărcile
+        const completion = await openai.chat.completions.create({
+          model: "gpt-4o-mini",
+          messages: [
+            {
+              role: "system",
+              content: "Ești un inginer specialist în service pentru invertoare fotovoltaice de toate mărcile (SMA, Fronius, Huawei, Growatt, Deye, Solis, GoodWe, Victron, Schneider, ABB, SolarEdge, Enphase, Delta, Kostal, Sungrow ș.a.). Răspunde în limba română tehnică, clar și structurat. Oferă: 1) Codul erorii și semnificația, 2) Cauze probabile, 3) Pași concreți de diagnostic și remediere, 4) Recomandări de siguranță. Dacă eroarea indică o defecțiune hardware gravă, recomandă contactarea unui electrician autorizat."
+            },
+            {
+              role: "user",
+              content: `Diagnostichează următoarea eroare de invertor fotovoltaic: "${text}"`
+            }
+          ],
+          max_tokens: 800,
+          temperature: 0.3,
+        });
 
-    const prompt = `
-Ești un asistent tehnic pentru diagnoză de invertoare fotovoltaice.
+        const aiResponse = completion.choices[0].message.content || "Nu s-a putut genera un răspuns.";
+        finalResult = finalResult 
+          ? `${finalResult}\n\n---\n\n🤖 **ANALIZĂ AI SUPLIMENTARĂ:**\n\n${aiResponse}`
+          : `🤖 **ANALIZĂ AI:**\n\n${aiResponse}`;
 
-Userul a introdus:
-"${input}"
+        // Calculează costul estimat (GPT-4o-mini ~ $0.15/1M input, $0.60/1M output)
+        const inputTokens = completion.usage?.prompt_tokens || 0;
+        const outputTokens = completion.usage?.completion_tokens || 0;
+        const costEstimat = (inputTokens / 1000000) * 0.15 + (outputTokens / 1000000) * 0.60;
+        
+        // Actualizează costul estimat lunar
+        await supabase
+          .from("profiles")
+          .update({
+            estimated_spend_this_month: (profile.estimated_spend_this_month || 0) + costEstimat
+          })
+          .eq("uuid", user.id);
+      } else {
+        // Am găsit în DB, dar adăugăm o notă că e din baza de date
+        finalResult = `📚 **DIN BAZA DE DATE:**\n\n${finalResult}`;
+      }
 
-Răspunde în limba română, clar și practic.
-
-Structură obligatorie:
-1. Interpretare probabilă
-2. Ce verifici
-3. Ce faci mai departe
-4. Când chemi service
-
-Nu inventa modele sau coduri dacă nu sunt sigure.
-Dacă inputul este vag, spune ce informații mai trebuie.
-`.trim();
-
-    const aiResponse = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      temperature: 0.2,
-      messages: [
-        {
-          role: "system",
-          content:
-            "Ești un expert tehnic în diagnoza invertoarelor fotovoltaice.",
-        },
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
-    });
-
-    const finalResult =
-      aiResponse.choices?.[0]?.message?.content?.trim() ||
-      "AI nu a returnat text.";
-
-    if (!isUnlimitedRole) {
+      // Incrementează contorul de utilizare
       await supabase
         .from("profiles")
         .update({
-          text_used_this_month: profile.text_used_this_month + 1,
-          estimated_spend_this_month:
-            Number(profile.estimated_spend_this_month) + ESTIMATED_TEXT_AI_COST,
+          text_used_this_week: profile.text_used_this_week + 1,
+          text_used_this_month: profile.text_used_this_month + 1
         })
         .eq("uuid", user.id);
+
+      return NextResponse.json({ result: finalResult });
     }
 
-    return NextResponse.json({
-      result: finalResult,
-      source: "ai",
-    });
-  } catch (error) {
-    console.error("EROARE REALĂ ANALYZE:", error);
+    // Pentru FREE - dacă nu s-a găsit nimic în DB
+    if (isFree) {
+      if (!errorDb || errorDb.length === 0) {
+        finalResult = "❌ Eroarea nu a fost găsită în baza de date.\n\n💡 **Upgrade la PRO** pentru analiză AI avansată și diagnostic precis pentru orice eroare.";
+      }
+      
+      // Incrementează contorul pentru FREE
+      await supabase
+        .from("profiles")
+        .update({
+          text_used_this_week: profile.text_used_this_week + 1,
+          text_used_this_month: profile.text_used_this_month + 1
+        })
+        .eq("uuid", user.id);
+        
+      return NextResponse.json({ result: finalResult });
+    }
 
-    return NextResponse.json(
-      { error: `Eroare server: ${String(error)}` },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Rol necunoscut" }, { status: 403 });
+
+  } catch (error) {
+    console.error("API Analyze Error:", error);
+    return NextResponse.json({ 
+      error: "Eroare internă. Verifică consola pentru detalii." 
+    }, { status: 500 });
   }
 }
